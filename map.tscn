@@ -1,0 +1,82 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://map.gd" type="Script" id=1]
+[ext_resource path="res://scrollBox.gd" type="Script" id=2]
+[ext_resource path="res://mapMain.gd" type="Script" id=3]
+
+[sub_resource type="ImageTexture" id=2]
+flags = 1
+flags = 1
+size = Vector2( 1000, 1000 )
+
+[node name="map" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 3 )
+
+[node name="scrollBox" type="ColorRect" parent="."]
+margin_right = 1024.0
+margin_bottom = 576.0
+rect_clip_content = true
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+color = Color( 0.0901961, 0.101961, 0.129412, 1 )
+script = ExtResource( 2 )
+
+[node name="Control" type="Control" parent="scrollBox"]
+margin_right = 1021.0
+margin_bottom = 577.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 1 )
+totalSizeX = 1000
+totalSizeY = 1000
+highColor = Color( 0.509804, 0.776471, 0.890196, 1 )
+lowColor = Color( 0.27451, 0.282353, 0.321569, 1 )
+highlightId = 0
+
+[node name="mapTex" type="TextureRect" parent="scrollBox/Control"]
+margin_right = 1000.0
+margin_bottom = 1000.0
+mouse_filter = 2
+mouse_default_cursor_shape = 3
+texture = SubResource( 2 )
+
+[node name="VScrollBar" type="VScrollBar" parent="scrollBox"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -12.0
+margin_bottom = -12.0
+
+[node name="HScrollBar" type="HScrollBar" parent="scrollBox"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -12.0
+margin_right = -12.0
+
+[node name="Tween" type="Tween" parent="scrollBox"]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_top = 580.0
+margin_right = 1024.0
+margin_bottom = 600.0
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+margin_right = 510.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "+"
+
+[node name="Button2" type="Button" parent="HBoxContainer"]
+margin_left = 514.0
+margin_right = 1024.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "-"
+
+[connection signal="pressed" from="HBoxContainer/Button" to="scrollBox" method="_on_in_Button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Button2" to="scrollBox" method="_on_out_Button_pressed"]
