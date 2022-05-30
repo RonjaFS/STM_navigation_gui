@@ -19,34 +19,32 @@ var highlights = []
 var arrows = []
 #var Arrow = preload("res://Arrow.tscn")
 var Marker = preload("res://FlakeMarker.tscn")
+var texture
 func update_set(u):
 	update_pattern()
 
-func create_texture_with_pattern():
+func create_texture_with_pattern(obj, navGenCallbackName):
 	var image = Image.new()
 	
 	image.create(totalSizeX, totalSizeY, false, Image.FORMAT_RGB8)
 	var xOffset = 0
 	var yOffset = 0	
-	image.lock()
-#	while yOffset < totalSizeY-(2 + patternSizeY):
-#		yOffset = yOffset + (2 + patternSizeY)
-#		while xOffset < totalSizeX-(2 + patternSizeX):
-#			xOffset = xOffset +(2 + patternSizeX)
-#			addNavPatch(xOffset,yOffset,image)
-	#nav_generator.createNavigation(image, 10, highColor, highlightColor, highlightId, hightlightMarker, min(patternSizeX,patternSizeY), min(totalSizeX,totalSizeY))
-	nav_generator.createNavigation(image, 10, highColor, highlightColor, -1, false, min(patternSizeX,patternSizeY), min(totalSizeX,totalSizeY))
-	image.unlock()
+	nav_generator.createNavigation(image, 10, highColor, highlightColor, -1, false, min(patternSizeX,patternSizeY), min(totalSizeX,totalSizeY), obj, navGenCallbackName)
 	return image
+func navGenCallback(image):
+		texture.create_from_image(image, Texture.FLAG_MIPMAPS)
 
 func update_pattern():
 	nav_generator = load("res://navGenerator.gd").new()
+	add_child(nav_generator)
 	if(self.is_inside_tree()):
-		var texture = ImageTexture.new()
-		texture.create_from_image(create_texture_with_pattern(), Texture.FLAG_MIPMAPS)
+		texture = ImageTexture.new()
+		create_texture_with_pattern(self, "navGenCallback")
+#		texture.create_from_image(create_texture_with_pattern(), Texture.FLAG_MIPMAPS)
 		$mapTex.texture = texture
 
 func _ready():
+	print(MarkerStore.list)
 	update_pattern()
 
 func zoom(factor):

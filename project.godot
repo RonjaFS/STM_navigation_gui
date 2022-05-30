@@ -12,7 +12,12 @@ config_version=4
 
 config/name="Navigation Helper"
 run/main_scene="res://main.tscn"
+run/low_processor_mode=true
 config/icon="res://icon.png"
+
+[autoload]
+
+MarkerStore="*res://markerStore.gd"
 
 [physics]
 
