@@ -17,7 +17,7 @@
  <text>import pya
 import math
 
-BASE_PATH = "/home/timo/Documents/Uni/9.Masterarbeit_Semester/lithoFiles/"
+BASE_PATH = "/home/user/ElectronBeamLithographyFiles/"
 PIXEL_SIZE = 100
 # the gap between the squares/pixels that build the navpatch
 GAP_PIXELS = 0
@@ -179,6 +179,8 @@ mainWindow.load_layout(filename+".gds", 0)
 
 exit()
 
+
+# The optional dose test program starts here
 layoutDose = pya.Layout()
 top = layoutDose.create_cell("TOP_DOSETEST")
 layer = layoutDose.layer(1, 0)
