@@ -44,7 +44,7 @@ func update_pattern():
 		$mapTex.texture = texture
 
 func _ready():
-	print(MarkerStore.list)
+	print(MarkerStore.markers)
 	update_pattern()
 
 func zoom(factor):
@@ -63,6 +63,7 @@ func add_marker(pos: Vector2, type: int):
 	marker.rect_position = pos - marker.rect_size/2
 	markers.append(marker)
 	add_child(marker)
+	MarkerStore.add_store_marker(pos,type)
 	return marker
 
 func add_marker_by_index(posIndex,marker, type):

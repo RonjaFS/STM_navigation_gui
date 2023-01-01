@@ -45,7 +45,7 @@ func getIndexAndMarker():
 
 func update_marker():
 	var indexAndMarker = getIndexAndMarker()
-	get_node("../map").set_marked_index(indexAndMarker[1], indexAndMarker[0])
+	mapNode.set_marked_index(indexAndMarker[1], indexAndMarker[0])
 
 func childIndexForNumber(n):
 	var line = floor(n/sizeX)
@@ -62,3 +62,14 @@ func _on_gotoMarker_pressed():
 func _on_addMarker_pressed():
 	var indexAndMarker = getIndexAndMarker()
 	mapNode.add_marker(indexAndMarker[0], indexAndMarker[1])
+
+
+func _on_SaveButton_pressed():
+	MarkerStore.save_markers_to_file()
+
+
+func _on_LoadButton_pressed():
+	MarkerStore.load_markers_from_file()
+
+func _on_RemoveMarkerButton_pressed():
+	MarkerStore.remove_last()

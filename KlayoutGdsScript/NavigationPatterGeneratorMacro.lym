@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description/>
+ <version/>
+ <category>pymacros</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>python</interpreter>
+ <dsl-interpreter-name/>
+ <text>import pya
+import math
+
+BASE_PATH = "/home/timo/Documents/Uni/9.Masterarbeit_Semester/lithoFiles/"
+PIXEL_SIZE = 100
+# the gap between the squares/pixels that build the navpatch
+GAP_PIXELS = 0
+# the gap (in pixels) between two navpatches
+GAP_NAVPATCHES = 1
+NAVPATCHSIZE = 3
+BOXSTYLE = "Lshape2" # "Lshape", "box", "grid", "Lshape"
+
+def navpatchDigitCount():
+    return (NAVPATCHSIZE) ** 2 - 1
+
+def addRectPixelCoord(x,y, offsetX, offsetY):
+    s = PIXEL_SIZE + GAP_PIXELS
+    top.shapes(layer).insert(pya.Box(offsetX+x * s, offsetY+y * s, offsetX+x * s+PIXEL_SIZE, offsetY+y * s+PIXEL_SIZE))
+
+def addRectLinePixelCoord(fromX,fromY,toX,toY, offsetX, offsetY):
+    s = PIXEL_SIZE + GAP_PIXELS
+    top.shapes(layer).insert(pya.Box(offsetX + (fromX * s) - PIXEL_SIZE, offsetY + fromY * s - PIXEL_SIZE, offsetX + (toX * s), offsetY + (toY * s)))
+
+def addNavpatch(x, y, id, isChunkMarker, offsetX, offsetY):
+        size = NAVPATCHSIZE + 2
+        # A navpatch is 5x5 on 1\mu m x 1\mu m (bigger would be better but maybe not possible with the STM)
+        # There are two boxStyles box/grid. The grid style should produces simpler and smaller files and might be easier to read with the stm
+        if BOXSTYLE == "box":
+          for i in range(0,size):
+              addRectPixelCoord(x + i, y, offsetX, offsetY)
+          for i in range(0,size-1):
+              addRectPixelCoord(x + size - 1, y + i, offsetX, offsetY)
+          for i in range(0,size):
+              addRectPixelCoord(x + i, y + size - 1, offsetX, offsetY)
+          for i in range(0,size-1):
+              addRectPixelCoord(x, y + i, offsetX, offsetY)
+
+        if BOXSTYLE == "Lshape":
+          addRectLinePixelCoord(x-1,y,x+math.floor(size/2.0),y,offsetX, offsetY)
+          addRectLinePixelCoord(x,y+1,x,y+math.floor(size/2.0),offsetX, offsetY)
+          addRectPixelCoord(x-1, y-2, offsetX, offsetY)
+          
+        if BOXSTYLE == "Lshape2":
+          addRectLinePixelCoord(x-1,y,x+math.floor(size/2.0),y,offsetX, offsetY)
+          addRectLinePixelCoord(x,y+1,x,y+math.floor(size/2.0)+1,offsetX, offsetY)
+
+        if (isChunkMarker):
+            addRectPixelCoord(x + 1, y + 1, offsetX, offsetY)
+
+        stringNumber = format(id, "0"+str(navpatchDigitCount())+"b")
+        i = 0
+        for char in stringNumber:
+            if char == '1':
+                idOffsetOne = i + 1
+                addRectPixelCoord(1 + x + idOffsetOne % NAVPATCHSIZE, y + 1 + math.floor(idOffsetOne / NAVPATCHSIZE), offsetX, offsetY)
+            i+=1
+
+
+def createNavigationChunk(x,y,id, cutoffX=-1, cutoffY=-1):
+    numberOfIndicators = 2 ** navpatchDigitCount()
+    max_NavpatchChunkWidth = math.floor(math.sqrt(numberOfIndicators + 1))
+    maxX = max_NavpatchChunkWidth if cutoffX == -1 else cutoffX
+    maxY = max_NavpatchChunkWidth if cutoffY == -1 else cutoffY
+    navpatchDistance = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
+    
+    print("max_NavpatchChunkWidth ", max_NavpatchChunkWidth)
+
+    if BOXSTYLE == "grid":
+      for i in range(maxX):
+        addRectLinePixelCoord(i*navpatchDistance, 0, i*navpatchDistance, maxY*navpatchDistance, x, y)
+        print("grid vertical: ", i, " of ", maxX)
+      for j in range(maxY):
+        addRectLinePixelCoord(0, j*navpatchDistance, maxX*navpatchDistance, j*navpatchDistance, x, y)
+        print("grid horizontal: ", i, " of ", maxX)
+
+    for i in range(maxX):
+        print(i, " of ", maxX)
+        for j in range(maxY):
+            if (j == 0 and i == 0):
+                addNavpatch(0, 0, id, True, x, y)
+            else:
+                addNavpatch(i * navpatchDistance, j* navpatchDistance, j * max_NavpatchChunkWidth + i - 1, False, x, y)
+
+def navigationChunkPixelSize():
+    numberOfIndicators = 2 ** navpatchDigitCount()
+    max_NavpatchChunkWidth = math.floor(math.sqrt(numberOfIndicators + 1))
+    navpatchDistance = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
+    return max_NavpatchChunkWidth * navpatchDistance
+
+
+
+def createNavigation(x, y, patchCount, maxSize = -1):
+    s = navigationChunkPixelSize()*PIXEL_SIZE
+    for i in range(patchCount):
+        if maxSize != -1:
+            if s*(i) &gt; maxSize:
+                    continue
+        for j in range(patchCount):
+            cutoffX = -1
+            cutoffY = -1
+            if maxSize != -1:
+                if s*(j) &gt; maxSize:
+                    continue
+                if s*(i+1) &gt; maxSize:
+                    cutoffX = math.floor((maxSize - s*i) / (PIXEL_SIZE*(NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+                if s*(j+1) &gt; maxSize:
+                    cutoffY = math.floor((maxSize - s*j) / (PIXEL_SIZE*(NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+            createNavigationChunk(s*i+x, s*j+y, j*patchCount+i,cutoffX,cutoffY)
+
+
+# override default settings
+PIXEL_SIZE = 200
+GAP_PIXELS = 0
+GAP_NAVPATCHES = 1
+NAVPATCHSIZE = 4
+patchCount = 9
+
+layout = pya.Layout()
+top = layout.create_cell("TOP")
+layer = layout.layer(1, 0)
+
+createNavigation(0, 0, patchCount, 250 * 1000)
+
+# x3TotalSize = navigationChunkPixelSize() * PIXEL_SIZE * patchCount
+
+
+# # override default settings
+# PIXEL_SIZE = 200
+# GAP_PIXELS = 0
+# GAP_NAVPATCHES = 1
+# NAVPATCHSIZE = 4
+# patchCount = 1
+# layer = layout.layer(2, 0)
+# createNavigation(80 * 1000 + PIXEL_SIZE, 0, patchCount, 80 * 1000)
+
+# PIXEL_SIZE = 100
+# GAP_PIXELS = 0
+# GAP_NAVPATCHES = 1
+# NAVPATCHSIZE = 5
+# patchCount = 1
+# layer = layout.layer(3, 0)
+# createNavigation(80 * 1000 + PIXEL_SIZE, 80 * 1000 + PIXEL_SIZE, patchCount, 80 * 1000)
+
+# PIXEL_SIZE = 200
+# GAP_PIXELS = 0
+# GAP_NAVPATCHES = 1
+# NAVPATCHSIZE = 4
+# patchCount = 1
+# layer = layout.layer(4, 0)
+# createNavigation(0, 80 * 1000 + PIXEL_SIZE, patchCount, 80 * 1000)
+
+filename = BASE_PATH+"250um_4x4_200nm_DoseTest"
+filenameExt = "" if BOXSTYLE == "box" else "_grid"
+if BOXSTYLE == "Lshape":
+  filenameExt = "_Lshape"
+if BOXSTYLE == "Lshape2":
+  filenameExt = "_Lshape2"
+filename += filenameExt
+layout.write(filename+".gds")
+mainWindow = pya.Application.instance().main_window()
+mainWindow.load_layout(filename+".gds", 0)
+
+
+exit()
+
+layoutDose = pya.Layout()
+top = layoutDose.create_cell("TOP_DOSETEST")
+layer = layoutDose.layer(1, 0)
+
+GAP_PIXELS = 0
+GAP_NAVPATCHES = 2
+NAVPATCHSIZE = 4
+BOXSTYLE = "grid" # "box", "grid"
+navpatchDistance = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
+
+PIXEL_SIZE = 100
+
+
+for i in range(8):
+  addNavpatch(i*navpatchDistance, 0, 24077, True, 2 * 80 * 1000 + 2*200, 1*250*6)
+  
+PIXEL_SIZE = 150
+for i in range(8):
+  addNavpatch(i*navpatchDistance, 0, 24077, False, 2 * 80 * 1000 + 2*200, 2*250*6)
+  
+PIXEL_SIZE = 200
+for i in range(8):
+  addNavpatch(i*navpatchDistance, 0, 24077, False, 2 * 80 * 1000 + 2*200, 3*250*6)
+  
+PIXEL_SIZE = 250
+for i in range(8):
+  addNavpatch(i*navpatchDistance, 0, 24077, True, 2 * 80 * 1000 + 2*200, 4*250*6)
+
+PIXEL_SIZE = 300
+for i in range(8):
+  addNavpatch(i*navpatchDistance, 0, 24077, True, 2 * 80 * 1000 + 2*200, 5*250*6)
+
+filenameDose = BASE_PATH+"4samplesEach80um_dose"
+layoutDose.write(filenameDose+".gds")
+mainWindow = pya.Application.instance().main_window()
+mainWindow.load_layout(filenameDose+".gds", 0)
+
+
+GAP_PIXELS = 0
+GAP_NAVPATCHES = 2
+NAVPATCHSIZE = 4
+BOXSTYLE = "Lshape" # "box", "grid"
+filename = BASE_PATH+"200um_4x4_200nm_noMarker"
+filenameExt = "" if BOXSTYLE == "box" else "_grid"
+if BOXSTYLE == "Lshape":
+  filenameExt = "_Lshape"
+if BOXSTYLE == "Lshape2":
+  filenameExt = "_Lshape2"
+filename += filenameExt
+layout.write(filename+".gds")
+mainWindow = pya.Application.instance().main_window()
+mainWindow.load_layout(filename+".gds", 0)
+</text>
+</klayout-macro>

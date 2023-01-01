@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Field.gd" type="Script" id=1]
 [ext_resource path="res://new_styleboxflat.tres" type="StyleBox" id=2]
+[ext_resource path="res://MarkerListView.gd" type="Script" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.133333, 0.133333, 0.133333, 1 )
@@ -118,34 +119,66 @@ custom_styles/disabled = ExtResource( 2 )
 custom_styles/normal = ExtResource( 2 )
 text = "Goto Pattern"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -22.0
+margin_top = -45.0
+margin_bottom = 6.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 648.0
+margin_bottom = 14.0
+alignment = 1
+
+[node name="SaveButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 229.0
+margin_right = 258.0
+margin_bottom = 14.0
+text = "save"
+
+[node name="LoadButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 262.0
+margin_right = 289.0
+margin_bottom = 14.0
+text = "load"
+
+[node name="RemoveMarkerButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 293.0
+margin_right = 418.0
+margin_bottom = 14.0
+text = "remove last marker"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+margin_top = 18.0
+margin_right = 648.0
+margin_bottom = 51.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
 margin_right = 25.0
 margin_bottom = 68.0
+script = ExtResource( 3 )
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
 margin_right = 25.0
 margin_bottom = 14.0
 text = "test"
 
-[node name="Label2" type="Label" parent="ScrollContainer/VBoxContainer"]
+[node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
 margin_top = 18.0
 margin_right = 25.0
 margin_bottom = 32.0
 text = "test"
 
-[node name="Label3" type="Label" parent="ScrollContainer/VBoxContainer"]
+[node name="Label3" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
 margin_top = 36.0
 margin_right = 25.0
 margin_bottom = 50.0
 text = "test"
 
-[node name="Label4" type="Label" parent="ScrollContainer/VBoxContainer"]
+[node name="Label4" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
 margin_top = 54.0
 margin_right = 25.0
 margin_bottom = 68.0
@@ -154,3 +187,6 @@ text = "test"
 [connection signal="pressed" from="HBoxContainer/updateButton" to="." method="_on_updateButton_pressed"]
 [connection signal="pressed" from="HBoxContainer/addMarker" to="." method="_on_addMarker_pressed"]
 [connection signal="pressed" from="HBoxContainer/gotoMarker" to="." method="_on_gotoMarker_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/SaveButton" to="." method="_on_SaveButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/LoadButton" to="." method="_on_LoadButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/RemoveMarkerButton" to="." method="_on_RemoveMarkerButton_pressed"]

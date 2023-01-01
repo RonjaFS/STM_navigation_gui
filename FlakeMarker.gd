@@ -16,4 +16,3 @@ func update_color(new):
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$FlakeIcon.modulate = color
-	
