@@ -48,6 +48,7 @@ func _ready():
 	update_pattern()
 
 func zoom(factor):
+	print(factor)
 	$mapTex.rect_scale = $mapTex.rect_scale * factor
 
 func _on_Button_pressed():

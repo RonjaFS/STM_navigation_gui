@@ -19,8 +19,10 @@ func _input(event):
 			elif event.button_index == BUTTON_WHEEL_DOWN:
 				zoom_dir = -1
 			if zoom_dir != 0:
+				var zoom_factor = (1 + zoom_dir * 0.05)
+				print(zoom_factor)
 				var zoom_pos = get_local_mouse_position()
-				scale_at_pivot(zoom_pos, (1 + zoom_dir * 0.05))
+				scale_at_pivot(zoom_pos, zoom_factor)
 			
 			if event.button_index == BUTTON_RIGHT:
 				child.add_marker(child.get_local_mouse_position(),0)
@@ -35,8 +37,10 @@ func scale_at_pivot(p, factor):
 	# cap rect scale:
 	child.rect_scale = Vector2(min(child.rect_scale.x, 20), min(child.rect_scale.y, 20))
 	child.rect_scale = Vector2(max(child.rect_scale.x, 0.2), max(child.rect_scale.y, 0.2))
+	var actually_scaled_factor = child.rect_scale.x/old_scale.x
 	if old_scale != child.rect_scale:
-		child.rect_position -= (p-child.rect_position)*(factor-1)
+		print("updatePos")
+		child.rect_position -= (p-child.rect_position)*(actually_scaled_factor-1)
 
 func _on_vbar(new_val):
 	child.rect_position.y = new_val
