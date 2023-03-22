@@ -3,10 +3,11 @@ extends Control
 
 var nav_generator
 
-export var patternSizeX = 3
-export var patternSizeY = 3
+export var fieldSize = 3
 export var totalSizeX = 500
 export var totalSizeY = 500
+export var pixelSize = 200
+export var markerBits = 1
 
 export var highColor = Color(255,255,255) 
 export var lowColor =  Color(100,100,100) 
@@ -14,9 +15,11 @@ export var highlightColor = Color(200,100,0)
 export var highlightId = 1
 export var hightlightMarker = false
 export var update = false setget update_set
+
 var markers = []
 var highlights = []
 var arrows = []
+
 #var Arrow = preload("res://Arrow.tscn")
 var Marker = preload("res://FlakeMarker.tscn")
 var texture
@@ -29,7 +32,7 @@ func create_texture_with_pattern(obj, navGenCallbackName):
 	image.create(totalSizeX, totalSizeY, false, Image.FORMAT_RGB8)
 	var xOffset = 0
 	var yOffset = 0	
-	nav_generator.createNavigation(image, 10, highColor, highlightColor, -1, false, min(patternSizeX,patternSizeY), min(totalSizeX,totalSizeY), obj, navGenCallbackName)
+	nav_generator.createNavigation(image, 10, highColor, highlightColor, -1, false, fieldSize, min(totalSizeX,totalSizeY), obj, navGenCallbackName)
 	return image
 func navGenCallback(image):
 		texture.create_from_image(image, Texture.FLAG_MIPMAPS)
@@ -45,6 +48,7 @@ func update_pattern():
 
 func _ready():
 	print(MarkerStore.markers)
+	load_patternFile()
 	update_pattern()
 
 func zoom(factor):
@@ -96,3 +100,21 @@ func add_arrow(from_pos: Vector2, to_pos: Vector2, type: int, color: Color):
 	arrows.append(arrow)
 	add_child(arrow)
 	return arrow
+
+func save_image():
+	var img = $mapTex.texture.get_data()
+	img.save_png("user://navigationImage.png")
+
+func load_patternFile():
+	var file = File.new()
+	file.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json", File.READ)
+	var content = file.get_as_text()
+	file.close()
+	var json = JSON.parse(content)
+	var patternData = json.result
+	if(json.error):
+		print("json Parse error:", json.error)
+	self.fieldSize = patternData.generalData.fieldSize
+	self.pixelSize = patternData.generalData.pixelSize
+	self.markerBits = patternData.generalData.markerBits
+

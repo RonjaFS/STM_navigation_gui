@@ -67,7 +67,7 @@ sizeY = 4
 [node name="ColorRect" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color( 0.219608, 0.219608, 0.219608, 0.192157 )
+margin_right = 10.0
 
 [node name="GridContainer" type="GridContainer" parent="."]
 anchor_left = 0.5
@@ -87,19 +87,19 @@ margin_bottom = 24.0
 alignment = 1
 
 [node name="updateButton" type="Button" parent="HBoxContainer"]
-margin_left = 122.0
-margin_right = 257.0
+margin_left = 98.0
+margin_right = 201.0
 margin_bottom = 24.0
 custom_styles/hover = SubResource( 9 )
 custom_styles/pressed = SubResource( 8 )
 custom_styles/focus = ExtResource( 2 )
 custom_styles/disabled = ExtResource( 2 )
 custom_styles/normal = ExtResource( 2 )
-text = "Update navigation"
+text = "Show Pattern"
 
 [node name="addMarker" type="Button" parent="HBoxContainer"]
-margin_left = 261.0
-margin_right = 420.0
+margin_left = 205.0
+margin_right = 364.0
 margin_bottom = 24.0
 custom_styles/hover = SubResource( 9 )
 custom_styles/pressed = SubResource( 8 )
@@ -109,8 +109,8 @@ custom_styles/normal = ExtResource( 2 )
 text = "Add Marker at Pattern"
 
 [node name="gotoMarker" type="Button" parent="HBoxContainer"]
-margin_left = 424.0
-margin_right = 525.0
+margin_left = 368.0
+margin_right = 469.0
 margin_bottom = 24.0
 custom_styles/hover = SubResource( 9 )
 custom_styles/pressed = SubResource( 8 )
@@ -119,7 +119,19 @@ custom_styles/disabled = ExtResource( 2 )
 custom_styles/normal = ExtResource( 2 )
 text = "Goto Pattern"
 
+[node name="saveImageButton" type="Button" parent="HBoxContainer"]
+margin_left = 473.0
+margin_right = 550.0
+margin_bottom = 24.0
+custom_styles/hover = SubResource( 9 )
+custom_styles/pressed = SubResource( 8 )
+custom_styles/focus = ExtResource( 2 )
+custom_styles/disabled = ExtResource( 2 )
+custom_styles/normal = ExtResource( 2 )
+text = "save img"
+
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
+visible = false
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -187,6 +199,8 @@ text = "test"
 [connection signal="pressed" from="HBoxContainer/updateButton" to="." method="_on_updateButton_pressed"]
 [connection signal="pressed" from="HBoxContainer/addMarker" to="." method="_on_addMarker_pressed"]
 [connection signal="pressed" from="HBoxContainer/gotoMarker" to="." method="_on_gotoMarker_pressed"]
+[connection signal="pressed" from="HBoxContainer/saveImageButton" to="." method="_on_gotoMarker_pressed"]
+[connection signal="pressed" from="HBoxContainer/saveImageButton" to="." method="_on_saveImageButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/SaveButton" to="." method="_on_SaveButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/LoadButton" to="." method="_on_LoadButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/RemoveMarkerButton" to="." method="_on_RemoveMarkerButton_pressed"]

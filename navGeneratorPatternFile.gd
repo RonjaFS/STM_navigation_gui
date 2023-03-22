@@ -94,7 +94,7 @@ func addNavpatch(x, y, id, isChunkMarker, offsetX, offsetY, img):
 			addRectPixelCoord(1 + x + idOffsetOne % NAVPATCHSIZE, y + 1 + floor(idOffsetOne / NAVPATCHSIZE), offsetX, offsetY, col, img)
 		i+=1
 
-func createNavigationChunk(x, y, id, obj, callback, cutoffX=-1, cutoffY=-1, im=null):
+func createNavigationPattern(x, y, id, obj, callback, cutoffX=-1, cutoffY=-1, im=null):
 	var img
 	if(im == null):
 		img = image

@@ -5,17 +5,14 @@ extends Control
 # var b = "text"
 export var sizeX = 3
 export var sizeY = 3
-export var side_gap = 40
+export var side_gap = 130
 var buttons = []
 onready var mapNode = get_node("../map")
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	var this_size = min(self.rect_size.x, self.rect_size.y)
+
 	#$GridContainer.rect_size = Vector2(this_size, this_size)
-	$GridContainer.margin_bottom = this_size/2 - side_gap
-	$GridContainer.margin_top = -this_size/2 + side_gap
-	$GridContainer.margin_left = -this_size/2 + side_gap
-	$GridContainer.margin_right = this_size/2 - side_gap
+	anchor_center($GridContainer)
 	$GridContainer.columns = sizeX
 	for i in range(sizeX):
 		for j in range(sizeY):
@@ -26,7 +23,33 @@ func _ready():
 			b.toggle_mode = true
 			if (i == sizeY-1 and j == 0):
 				b.text = "marker"
-
+	addBorderCorner(-2,-2)
+	addBorderCorner(5,-2)
+	addBorderCorner(-2,5)
+	addBorderCorner(5,5)
+func anchor_center(node):
+	var this_size = min(self.rect_size.x, self.rect_size.y)
+	node.margin_bottom = this_size/2 - side_gap
+	node.margin_top = -this_size/2 + side_gap
+	node.margin_left = -this_size/2 + side_gap
+	node.margin_right = this_size/2 - side_gap
+func addBorderCorner(posx, posy):
+	var border_count_right = sizeX
+	var border_count_top = sizeY
+	for x_i in range(-1, border_count_right):
+		addCR(x_i+posx,0+posy,$GridContainer.rect_size, $GridContainer.rect_position)
+	for y_i in range( -border_count_top, 0):
+		addCR(0+posx,y_i+posy,$GridContainer.rect_size, $GridContainer.rect_position)
+	#addCR(posx,posy+1,$GridContainer.rect_size, $GridContainer.rect_position)
+func addCR(x,y,grid_size, grid_position):
+	var pixel_size = grid_size.x / sizeX
+	var cr = ColorRect.new()
+	cr.color = Color.gray
+	cr.rect_position = Vector2( x*pixel_size, y*pixel_size) + grid_position
+	cr.rect_size = Vector2(pixel_size+1,pixel_size+1)
+	self.add_child(cr)
+	self.move_child(cr,1)
+	cr.set_anchors_preset(Control.PRESET_CENTER)
 func getIndexAndMarker():
 	var number = 0
 	var marker = false
@@ -73,3 +96,7 @@ func _on_LoadButton_pressed():
 
 func _on_RemoveMarkerButton_pressed():
 	MarkerStore.remove_last()
+
+
+func _on_saveImageButton_pressed():
+	get_node("../map").save_image()

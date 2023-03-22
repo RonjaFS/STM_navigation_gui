@@ -12,3 +12,6 @@ func add_marker(index, marker):
 
 func scroll_to(index, marker):
 	$scrollBox.scroll_to_by_index(index, marker)
+
+func save_image():
+	$scrollBox/Control.save_image()

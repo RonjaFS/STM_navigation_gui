@@ -21,7 +21,7 @@ rect_clip_content = true
 mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
-color = Color( 0.0901961, 0.101961, 0.129412, 1 )
+color = Color( 0, 0, 0, 1 )
 script = ExtResource( 2 )
 
 [node name="Control" type="Control" parent="scrollBox"]

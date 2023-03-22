@@ -1,0 +1,135 @@
+{
+    "generalData":{
+        "pixelSize":200,
+        "fieldSize":3,
+        "markerBits":1
+    },
+    "navigation":{
+        "subNavs":[
+            [{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":true
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":true
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":true
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":true        
+            }],
+            [{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            }],
+            [{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitValue":1,
+                "markerFilled":false
+            }],
+            [{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            },{
+                "borderType":"Lshape",
+                "navSize":[256, 256],
+                "markerIndex":0,
+                "markerBitVal":0,
+                "markerFilled":false
+            }]
+        ]
+    },
+    "comment":"Other possible navigation entry: _ is used for optional params",
+    "navigation2":{
+        "borderType":"Lshape",
+        "width":256,
+        "height":256,
+        "markerIndex":0,
+        "markerBits":0,
+        "markerBitVal":0,
+        "markerFilled":false,
+        "fieldSize":[3,3]
+
+    },
+    "noPatternAreas":[
+        {
+            "pos":[10,10],
+            "navSize":[100,500]
+        },
+        {
+            "pos":[400,800],
+            "navSize":[200,200]
+        }
+    ]
+    
+
+}
