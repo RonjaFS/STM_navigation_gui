@@ -13,7 +13,10 @@ func add_marker(index, marker):
 func scroll_to(index, marker):
 	$scrollBox.scroll_to_index(index, marker)
 
-func save_image():
-	$scrollBox/Control.save_image()
+func save_navigation_cache():
+	$scrollBox/Control.save_navigation_cache()
+	
+func update_pattern(forceRebuild):
+	$scrollBox/Control.update_pattern(forceRebuild)
 func remove_all_marker():
 	$scrollBox/Control.remove_highlights()

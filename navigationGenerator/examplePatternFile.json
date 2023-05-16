@@ -1,108 +1,147 @@
 {
-	"generalData":{
-		"pixelSize":200,
-		"fieldSize":4,
-		"markerBits":1
+	"generalData": {
+		"pixelSize": 200,
+		"fieldSize": 4,
+		"markerBits": 1
 	},
-	"navigation":{
-		"chunkSize":20,
-		"borderType":"Lshape",
-		"chunks":[
-			[{
-				"markerIndex":0,
-				"markerBitVal":1,
-				"markerFilled":true,
-			},{
-				"markerIndex":1,
-				"markerBitVal":1,
-				"markerFilled":true,
-			},{
-
-				"markerIndex":2,
-				"markerBitVal":1,
-				"markerFilled":true
-			},{
-
-				"markerIndex":3,
-				"markerBitVal":1,
-				"markerFilled":true
-			},{
-
-				"markerIndex":4,
-				"markerBitVal":1,
-				"markerFilled":true        
-			}],
-			[{
-				"markerIndex":5,
-				"markerBitVal":1,
-				"markerFilled":false
-			},{
-				"markerIndex":6,
-				"markerBitVal":1,
-				"markerFilled":false
-			},{
-				"markerIndex":7,
-				"markerBitVal":1,
-				"markerFilled":false
-			},{
-				"markerIndex":8,
-				"markerBitVal":1,
-				"markerFilled":false
-			}],
-			[{
-				"markerIndex":9,
-				"markerBitVal":1,
-				"markerFilled":false
-			},{
-				"markerIndex":10,
-				"markerBitVal":1,
-				"markerFilled":false
-			},{
-				"markerIndex":11,
-				"markerBitVal":1,
-				"markerFilled":false
-			},{
-				"markerIndex":12,
-				"markerBitValue":1,
-				"markerFilled":false
-			}],
-			[{
-				"markerIndex":14,
-				"markerBitVal":1,
-				"markerFilled":false
-			},{
-				"markerIndex":14,
-				"markerBitVal":1,
-				"markerFilled":false
-			},{
-				"markerIndex":15,
-				"markerBitVal":1,
-				"markerFilled":false
-			},{
-				"markerIndex":16,
-				"markerBitVal":1,
-				"markerFilled":false
-			}]
+	"navigation": {
+		"chunkSize": 80,
+		"pixelSize": 200,
+		"fieldSize": 4,
+		"markerBits": 1,
+		"borderType": "Lshape",
+		"chunks": [
+			[
+				{
+					"chunkIndex": 0,
+					"markerBitVal": 1,
+					"markerFilled": true
+				},
+				{
+					"chunkIndex": 1,
+					"markerBitVal": 1,
+					"markerFilled": false
+				},
+				{
+					"chunkIndex": 2,
+					"markerBitVal": 1,
+					"markerFilled": false
+				},
+				{
+					"chunkIndex": 3,
+					"markerBitVal": 1,
+					"markerFilled": true
+				},
+				{
+					"chunkIndex": 4,
+					"markerBitVal": 1,
+					"markerFilled": true
+				}
+			],
+			[
+				{
+					"chunkIndex": 5,
+					"markerBitVal": 1,
+					"markerFilled": true
+				},
+				{
+					"chunkIndex": 6,
+					"markerBitVal": 1,
+					"markerFilled": false
+				},
+				{
+					"chunkIndex": 7,
+					"markerBitVal": 1,
+					"markerFilled": false
+				},
+				{
+					"chunkIndex": 8,
+					"markerBitVal": 1,
+					"markerFilled": true
+				}
+			],
+			[
+				{
+					"chunkIndex": 9,
+					"markerBitVal": 1,
+					"markerFilled": true
+				},
+				{
+					"chunkIndex": 10,
+					"markerBitVal": 1,
+					"markerFilled": false
+				},
+				{
+					"chunkIndex": 11,
+					"markerBitVal": 1,
+					"markerFilled": false
+				},
+				{
+					"chunkIndex": 12,
+					"markerBitValue": 1,
+					"markerFilled": true
+				}
+			],
+			[
+				{
+					"chunkIndex": 14,
+					"markerBitVal": 1,
+					"markerFilled": true
+				},
+				{
+					"chunkIndex": 14,
+					"markerBitVal": 1,
+					"markerFilled": true
+				},
+				{
+					"chunkIndex": 15,
+					"markerBitVal": 1,
+					"markerFilled": true
+				},
+				{
+					"chunkIndex": 16,
+					"markerBitVal": 1,
+					"markerFilled": true
+				}
+			]
 		]
 	},
-	"comment":"Other possible navigation entry: _ is used for optional params",
-	"navigation2":{
-		"borderType":"Lshape",
-		"navSize":[256,256],
-		"markerIndex":0,
-		"markerBits":0,
-		"markerBitVal":0,
-		"markerFilled":false,
-		"fieldSize":[3,3]
-	},
-	"noPatternAreas":[
+	"noPatternAreas": [
 		{
-			"pos":[10,10],
-			"navSize":[100,500]
+			"pos": [
+				10,
+				10
+			],
+			"size": [
+				50,
+				80
+			]
 		},
 		{
-			"pos":[400,800],
-			"navSize":[200,200]
+			"pos": [
+				200,
+				0
+			],
+			"size": [
+				20,
+				290
+			]
 		}
-	]
+	],
+	"comment": "Other possible navigation entry: _ is used for optional params",
+	"navigation2": {
+		"borderType": "Lshape",
+		"navSize": [
+			256,
+			256
+		],
+		"chunkIndex": 0,
+		"markerBits": 0,
+		"markerBitVal": 0,
+		"markerFilled": false,
+		"fieldSize": [
+			3,
+			3
+		]
+	}
 }

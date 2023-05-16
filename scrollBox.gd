@@ -26,7 +26,7 @@ func _input(event):
 
 			if event.button_index == MOUSE_BUTTON_RIGHT:
 				child.add_marker(child.get_local_mouse_position(),0)
-			# DRAG
+				# DRAG
 	if event is InputEventMouseMotion:
 		if event.button_mask == MOUSE_BUTTON_LEFT:
 			child.position+=event.relative

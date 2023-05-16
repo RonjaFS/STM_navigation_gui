@@ -14,6 +14,7 @@ var imageSize
 var navFileData
 
 var navigationStructure
+var hash_of_file
 var markerBits
 
 var positionCache = {}
@@ -22,6 +23,7 @@ var thread
 var mutex
 var textureUpdateTime = 0
 var posCacheLocked = false
+
 func _init():
 	print("nav gen got initilaized")
 
@@ -40,8 +42,8 @@ func navpatchDigitCount():
 
 func addRectPixelCoord(x, y, offsetX, offsetY, col, im):
 	var _x = offsetX+x
-	var _y = imageSize-(offsetY+y)
-	if(_x >= 0 and _x < imageSize and _y >= 0 and _y < imageSize):
+	var _y = imageSize.y - (offsetY + y)
+	if(_x >= 0 and _x < imageSize.x and _y >= 0 and _y < imageSize.y):
 		im.set_pixel(_x,_y, col)
 
 func addRectLinePixelCoord(fromX,fromY,toX,toY, offsetX, offsetY, col, im):
@@ -52,12 +54,24 @@ func addRectLinePixelCoord(fromX,fromY,toX,toY, offsetX, offsetY, col, im):
 		var px = offsetX + start.x + i * dir.normalized().x - 1
 		var py = offsetY + start.y + i * dir.normalized().y - 1
 		var _x = px
-		var _y = imageSize-py
-		if(_x >= 0 and _x < imageSize and _y >= 0 and _y < imageSize):
+		var _y = imageSize.y - py
+		if(_x >= 0 and _x < imageSize.x and _y >= 0 and _y < imageSize.y):
 			im.set_pixel(_x,_y, col)
 	#top.shapes(layer).insert(pya.Box(offsetX + (fromX * s) - PIXEL_SIZE, offsetY + fromY * s - PIXEL_SIZE, offsetX + (toX * s), offsetY + (toY * s)))
 
 func addNavpatch(x, y, id, isChunkMarker, offsetX, offsetY, img):
+	# check for no pattern area
+	var xAbs = x+offsetX
+	var yAbs = y+offsetY
+	for area in self.navFileData.noPatternAreas:
+		var xMin = area.pos[0]
+		var yMin = area.pos[1]
+		var xMax = area.size[0]+area.pos[0]
+		var yMax = area.size[1]+area.pos[1]
+		if xMin <= xAbs and yMin <= yAbs and xMax >= xAbs and yMax >= yAbs:
+			print("skip navPatch at:", x,", ",y)
+			return
+
 	# add to poscache:
 	var posCacheId = id
 	if(isChunkMarker):
@@ -65,7 +79,7 @@ func addNavpatch(x, y, id, isChunkMarker, offsetX, offsetY, img):
 		posCacheId += chunkMarkerExtra
 	if not positionCache.keys().has(posCacheId):
 		positionCache[posCacheId] = []
-	var posToAdd = Vector2(x + offsetX, imageSize - y - offsetY)
+	var posToAdd = Vector2(x + offsetX, imageSize.y - y - offsetY)
 	if positionCache[posCacheId].find(posToAdd) == -1:
 		positionCache[posCacheId].append(posToAdd)
 
@@ -126,7 +140,8 @@ func createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX=-1, cutof
 	var img
 	var x = chunkProps.pos.x
 	var y = chunkProps.pos.y
-	var m_id = chunkProps.markerIndex
+	var m_id = chunkProps.chunkIndex
+	var filled = chunkProps.markerFilled
 #	var fieldSize = int(navFileData.generalData.fieldSize)
 	if(im == null):
 		img = image
@@ -152,11 +167,11 @@ func createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX=-1, cutof
 		if( Time.get_ticks_msec() - textureUpdateTime > 300 ):
 			print("time refresh stuff:", Time.get_ticks_msec(), ", ",textureUpdateTime)
 			textureUpdateTime = Time.get_ticks_msec()
-			obj.call_deferred(callback, img)
+			obj.call_deferred(callback, img, false)
 		#false # img.lock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
 		for i in range(maxX):
-			if (j == 0 and i == 0):
-				addNavpatch(0, 0, m_id, true, x, y, img)
+			if (j == 0 and i == 0) or filled:
+				addNavpatch(i * navpatchDistance, j * navpatchDistance, m_id, true, x, y, img)
 			else:
 				var navPatchId =  j * max_NavpatchChunkWidth + i - 1;
 #				print("add navpatch with ID: ", navPatchId)
@@ -205,7 +220,7 @@ func navigationChunkPixelSize():
 	var navpatchDistance = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
 	return max_NavpatchChunkWidth * navpatchDistance
  
-func createNavigation(pimage, phighColor, phighlightColor, phighlightId, phighlightMarker, patternSize, maxSize, obj, callback):
+func createNavigation(pimage, phighColor, phighlightColor, phighlightId, phighlightMarker, patternSize, maxSize, obj, callback, forcePatternRebuild):
 	highColor = phighColor
 	highlightColor = phighlightColor
 	highlightId = phighlightId
@@ -214,44 +229,54 @@ func createNavigation(pimage, phighColor, phighlightColor, phighlightId, phighli
 	NAVPATCHSIZE = patternSize
 	imageSize = maxSize
 	var patchCount = 3
+	
+	print(DirAccess.get_files_at("user://"))
+	if not forcePatternRebuild:
+		var cacheImagePath = "user://navigation_"+str(hash_of_file)+".png"
+		var cachePositionCachePath = "user://navigation_positionCache_"+str(hash_of_file)+".json"
+		
+		if FileAccess.file_exists(cacheImagePath) and FileAccess.file_exists(cachePositionCachePath):
+			image = Image.load_from_file(cacheImagePath)
+			positionCache = FileAccess.open(cachePositionCachePath, FileAccess.READ).get_var()
+			obj.call(callback, image, true)
+			posCacheLocked = false
+			return
 	if (THREADED):
 		thread = Thread.new()
-#		thread.start(Callable(self, "_thread_createNavitation").bind([patchCount, maxSize, obj, callback]), Thread.PRIORITY_NORMAL)
 		thread.start(Callable(self, "_thread_createNavitation_file").bind([patchCount, maxSize, obj, callback]), Thread.PRIORITY_NORMAL)
 	else:
-#		_thread_createNavitation([patchCount, maxSize, obj, callback])
 		_thread_createNavitation_file([patchCount, maxSize, obj, callback])
 
-#func createNavigationWithFile(pimage, patchCount, phighColor, phighlightColor)
-func _thread_createNavitation(params):
-	posCacheLocked = true
-	textureUpdateTime = Time.get_ticks_msec()
-	var patchCount = params[0]
-	var maxSize = params[1]
-	var obj = params[2]
-	var callback = params[3]
-	print("hello form thread")
-	var s = navigationChunkPixelSize()
-	for chunkX in range(patchCount):
-		print(chunkX)
-		if maxSize != -1:
-			if s*(chunkX) > maxSize:
-					continue
-		for chunkY in range(patchCount):
-			var cutoffX = -1
-			var cutoffY = -1
-			print('chunkY:', chunkY)
-			if maxSize != -1:
-				if s*(chunkY) > maxSize:
-					continue
-				if s*(chunkX+1) > maxSize:
-					cutoffX = floor((maxSize - s*chunkX) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
-				if s*(chunkY+1) > maxSize:
-					cutoffY = floor((maxSize - s*chunkY) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
-			createNavigationChunk(s*chunkX, s*chunkY, chunkY*patchCount+chunkX, obj, callback, cutoffX, cutoffY)
-	obj.call_deferred(callback, image)
-	posCacheLocked = false
-	return
+#func _thread_createNavitation(params):
+#	posCacheLocked = true
+#	textureUpdateTime = Time.get_ticks_msec()
+#	var patchCount = params[0]
+#	var maxSize = params[1]
+#	var obj = params[2]
+#	var callback = params[3]
+#	print("hello form thread")
+#	var s = navigationChunkPixelSize()
+#	for chunkX in range(patchCount):
+#		print(chunkX)
+#		if maxSize.x != -1:
+#			if s*(chunkX) > maxSize.x:
+#					continue
+#		for chunkY in range(patchCount):
+#			var cutoffX = -1
+#			var cutoffY = -1
+#			print('chunkY:', chunkY)
+#			if maxSize.x != -1:
+#				if s*(chunkY) > maxSize.y:
+#					continue
+#				if s*(chunkX+1) > maxSize.x:
+#					cutoffX = floor((maxSize.x - s*chunkX) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+#				if s*(chunkY+1) > maxSize.y:
+#					cutoffY = floor((maxSize.x - s*chunkY) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+#			createNavigationChunk(s*chunkX, s*chunkY, chunkY*patchCount+chunkX, obj, callback, cutoffX, cutoffY)
+#	obj.call_deferred(callback, image)
+#
+#	posCacheLocked = false
+#	return
 func _thread_createNavitation_file(params):
 	
 #	navigationStructure.borderType
@@ -272,25 +297,25 @@ func _thread_createNavitation_file(params):
 	var navpatchSize = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
 	var s = navFileData.navigation.chunkSize * navpatchSize
 #	var s = navigationChunkPixelSize()
-	for chunkX in range(self.navFileData.navigation.chunks.size()):
-		if maxSize != -1:
-			if s*(chunkX) > maxSize:
+	for chunkY in range(self.navFileData.navigation.chunks.size()):
+		if maxSize.x != -1:
+			if s*(chunkY) > maxSize.y:
 					continue
-		for chunkY in self.navFileData.navigation.chunks[chunkX].size():
+		for chunkX in self.navFileData.navigation.chunks[chunkY].size():
 			var cutoffX = -1
 			var cutoffY = -1
-			print('chunkY:', chunkY)
-			if maxSize != -1:
-				if s*(chunkY) > maxSize:
+			print("XChunk nr: ", chunkX)
+			if maxSize.x != -1:
+				if s*(chunkX) > maxSize.x:
 					continue
-				if s*(chunkX+1) > maxSize:
-					cutoffX = floor((maxSize - s*chunkX) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
-				if s*(chunkY+1) > maxSize:
-					cutoffY = floor((maxSize - s*chunkY) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
-			var chunkProps = self.navFileData.navigation.chunks[chunkX][chunkY]
+				if s*(chunkX+1) > maxSize.x:
+					cutoffX = floor((maxSize.x - s*chunkX) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+				if s*(chunkY+1) > maxSize.y:
+					cutoffY = floor((maxSize.y - s*chunkY) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+			var chunkProps = self.navFileData.navigation.chunks[chunkY][chunkX]
 			chunkProps.pos = {"x": s * chunkX,"y": s * chunkY}
 			createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX, cutoffY)
-	obj.call_deferred(callback, image)
+	obj.call_deferred(callback, image, true)
 	posCacheLocked = false
 	return
 
@@ -298,8 +323,8 @@ func getSingleNavpatchTexture(pId, pMarker, patternSize):
 	highlightId = pId
 	highlightMarker = pMarker
 	NAVPATCHSIZE = patternSize
-	imageSize = patternSize+3
-	var img = Image.create(imageSize, imageSize, false, Image.FORMAT_RGB8)
+	imageSize = Vector2(patternSize+3,patternSize+3)
+	var img = Image.create(imageSize.x, imageSize.y, false, Image.FORMAT_RGB8)
 	addNavpatch(0, 0, pId, pMarker,2,2, img)
 	return img
 
@@ -317,10 +342,19 @@ func getPositionsForIndex(id, marker):
 		printerr("The index: "+str(posCacheId)+" is not part of the showed pattern")
 		return [Vector2(-10, -10)]
 		
+func get_totalSize():
+	var chunkS = int(navFileData.navigation.chunkSize)
+	var navpatchSize = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
+	var chunkXCount = 0
+	var chunkYCount = navFileData.navigation.chunks.size()
+	for chunks in navFileData.navigation.chunks:
+		chunkXCount = max(chunkXCount, chunks.size())
+	return [chunkS * navpatchSize * chunkXCount, chunkS * navpatchSize * chunkYCount]
 # Thread must be disposed (or "joined"), for portability.
 func load_patternFile():
 	var file = FileAccess.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json", FileAccess.READ)
 	var content = file.get_as_text()
+	hash_of_file = content.hash()
 	file.close()
 	var json = JSON.new()
 	var parseResultError = json.parse(content)
@@ -333,6 +367,7 @@ func load_patternFile():
 	markerBits = int(self.navFileData.generalData.markerBits)
 	navigationStructure = self.navFileData.navigation
 	self.NAVPATCHSIZE = self.navFileData.generalData.fieldSize
+	#self.navFileData.noPatternAreas
 
 func _exit_tree():
 	thread.wait_to_finish()

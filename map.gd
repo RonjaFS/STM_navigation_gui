@@ -5,8 +5,6 @@ var nav_generator
 var NavGenerator = preload("res://navGenerator.gd")
 
 @export var fieldSize = 3
-@export var totalSizeX = 500
-@export var totalSizeY = 500
 @export var pixelSize = 200
 @export var markerBits = 1
 
@@ -20,7 +18,7 @@ var NavGenerator = preload("res://navGenerator.gd")
 var markers = []
 var highlights = []
 var arrows = []
-
+var hash_of_file = ""
 var navigationStructure
 #var Arrow = preload("res://Arrow.tscn")
 var Marker = preload("res://FlakeMarker.tscn")
@@ -29,27 +27,32 @@ var texture
 func update_set(u):
 	update_pattern()
 
-func create_texture_with_pattern(obj, navGenCallbackName):
+func create_texture_with_pattern(obj, navGenCallbackName, forcePatternRebuild):
+	nav_generator.load_patternFile()
+	var totalSize = nav_generator.get_totalSize()
+	var totalSizeX = totalSize[0]
+	var totalSizeY = totalSize[1]
 	var imageT: Image = Image.create(totalSizeX, totalSizeY , false, Image.FORMAT_RGB8)
 	var xOffset = 0
 	var yOffset = 0
-	nav_generator.load_patternFile()
-	nav_generator.createNavigation(imageT, highColor, highlightColor, -1, false, fieldSize, min(totalSizeX,totalSizeY), obj, navGenCallbackName)
+	nav_generator.createNavigation(imageT, highColor, highlightColor, -1, false, fieldSize, Vector2(totalSizeX, totalSizeY), obj, navGenCallbackName, forcePatternRebuild)
 
-func navGenCallback(image):
+func navGenCallback(image, done):
 	texture = ImageTexture.create_from_image(image)
 	$mapTex.texture = texture
+	if done:
+		save_navigation_cache()
 
-func update_pattern():
+func update_pattern(forcePatternRebuild = false):
 	nav_generator = NavGenerator.new()
 	add_child(nav_generator)
 	if(self.is_inside_tree()):
-		create_texture_with_pattern(self, "navGenCallback")
+		create_texture_with_pattern(self, "navGenCallback", forcePatternRebuild)
 
 func _ready():
 	print(MarkerStore.markers)
 
-	load_patternFile()
+#	load_patternFile()
 	update_pattern()
 
 func zoom(factor):
@@ -100,21 +103,27 @@ func add_arrow(from_pos: Vector2, to_pos: Vector2, type: int, color: Color):
 	add_child(arrow)
 	return arrow
 
-func save_image():
-	var img = $mapTex.texture.get_data()
-	img.save_png("user://navigationImage.png")
+func save_navigation_cache():
+	var img = $mapTex.texture.get_image()
+	img.save_png("~/navigationImage2.png")
+	img.save_png("~/navigation_"+str(nav_generator.hash_of_file)+".png")
+	img.save_png("user://navigation_"+str(nav_generator.hash_of_file)+".png")
+	var file = FileAccess.open("user://navigation_positionCache_"+str(nav_generator.hash_of_file)+".json", FileAccess.WRITE)
+	file.store_var(nav_generator.positionCache)
+	print(DirAccess.open("user://").get_files())
 
-func load_patternFile():
-	var file = FileAccess.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json", FileAccess.READ)
-	var content = file.get_as_text()
-	file.close()
-	var json = JSON.new()
-	var parseResultError = json.parse(content)
-	var patternData = json.data
-	if(parseResultError != Error.OK):
-		printerr("json Parse error:", parseResultError)
-	print("set field size from: ", fieldSize, " to: ", patternData.generalData.fieldSize)
-	fieldSize = int(patternData.generalData.fieldSize)
-	pixelSize = int(patternData.generalData.pixelSize)
-	self.markerBits = int(patternData.generalData.markerBits)
-	self.navigationStructure = patternData.navigation
+#func load_projectFile():
+#	var file = FileAccess.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/exampleProject.json", FileAccess.READ)
+#	var content = file.get_as_text()
+#	hash_of_file = content.hash()
+#	file.close()
+#	var json = JSON.new()
+#	var parseResultError = json.parse(content)
+#	var patternData = json.data
+#	if(parseResultError != Error.OK):
+#		printerr("json Parse error:", parseResultError)
+#	print("set field size from: ", fieldSize, " to: ", patternData.generalData.fieldSize)
+#	fieldSize = int(patternData.generalData.fieldSize)
+#	pixelSize = int(patternData.generalData.pixelSize)
+#	self.markerBits = int(patternData.generalData.markerBits)
+#	self.navigationStructure = patternData.navigation

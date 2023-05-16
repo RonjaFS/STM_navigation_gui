@@ -95,4 +95,8 @@ func _on_RemoveMarkerButton_pressed():
 	MarkerStore.remove_last()
 
 func _on_saveImageButton_pressed():
-	get_node("../map").save_image()
+	get_node("../map").save_navigation_cache()
+
+
+func _on_rebuild_button_pressed():
+	get_node("../map").update_pattern(true)
