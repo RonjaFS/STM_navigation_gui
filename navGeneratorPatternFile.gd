@@ -115,10 +115,7 @@ func createNavigationPattern(x, y, id, obj, callback, cutoffX=-1, cutoffY=-1, im
 			print("grid horizontal: ", j, " of ", maxX)
 	print('after grid creating before navpatch')
 	for i in range(maxX):
-#		print('chunk Progress ',i/maxX * 100,'% (',i,'/', maxX,")")
-		img.unlock()
 		obj.call_deferred(callback, img)
-		img.lock()
 		for j in range(maxY):
 			if (j == 0 and i == 0):
 				addNavpatch(0, 0, id, true, x, y, img)
@@ -141,11 +138,11 @@ func createNavigation(pimage, patchCount, phighColor, phighlightColor, phighligh
 	imageSize = maxSize
 
 	thread = Thread.new()
-	thread.start(self, "_thread_createNavitation", [patchCount, maxSize, obj, callback], Thread.PRIORITY_HIGH)
+	thread.start(Callable(self,"_thread_createNavitation").bind([patchCount, maxSize, obj, callback]),Thread.PRIORITY_HIGH)
 
 func _thread_createNavitation(params):
 	# need to lock the image inside the thread
-	image.lock()
+	false # image.lock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
 	posCacheLocked = true
 	var patchCount = params[0]
 	var maxSize = params[1]
@@ -172,10 +169,10 @@ func _thread_createNavitation(params):
 					cutoffY = floor((maxSize - s*j) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
 			print("before chunc Creation")
 			createNavigationChunk(s*i, s*j, j*patchCount+i, obj, callback,cutoffX,cutoffY)
-			image.unlock()
+			false # image.unlock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
 			obj.call_deferred(callback, image)
-			image.lock()
-	image.unlock()
+			false # image.lock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
+	false # image.unlock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
 	posCacheLocked = false
 	return
 
@@ -186,9 +183,9 @@ func getSingleNavpatchTexture(pId, pMarker, patternSize):
 	imageSize = patternSize+3
 	var img = Image.new()
 	img.create(imageSize, imageSize, false, Image.FORMAT_RGB8)
-	img.lock()
+	false # img.lock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
 	addNavpatch(0, 0, pId, pMarker,2,2, img)
-	img.unlock()
+	false # img.unlock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
 	return img
 
 func getPositionsForIndex(id, marker):

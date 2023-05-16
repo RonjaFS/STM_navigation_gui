@@ -2,70 +2,65 @@ extends Control
 #tool
 
 var nav_generator
+var NavGenerator = preload("res://navGenerator.gd")
 
-export var fieldSize = 3
-export var totalSizeX = 500
-export var totalSizeY = 500
-export var pixelSize = 200
-export var markerBits = 1
+@export var fieldSize = 3
+@export var totalSizeX = 500
+@export var totalSizeY = 500
+@export var pixelSize = 200
+@export var markerBits = 1
 
-export var highColor = Color(255,255,255) 
-export var lowColor =  Color(100,100,100) 
-export var highlightColor = Color(200,100,0)
-export var highlightId = 1
-export var hightlightMarker = false
-export var update = false setget update_set
+@export var highColor = Color(255,255,255) 
+@export var lowColor =  Color(100,100,100) 
+@export var highlightColor = Color(200,100,0)
+@export var highlightId = 1
+@export var hightlightMarker = false
+@export var update = false : set = update_set
 
 var markers = []
 var highlights = []
 var arrows = []
 
+var navigationStructure
 #var Arrow = preload("res://Arrow.tscn")
 var Marker = preload("res://FlakeMarker.tscn")
 var texture
+
 func update_set(u):
 	update_pattern()
 
 func create_texture_with_pattern(obj, navGenCallbackName):
-	var image = Image.new()
-	
-	image.create(totalSizeX, totalSizeY, false, Image.FORMAT_RGB8)
+	var imageT: Image = Image.create(totalSizeX, totalSizeY , false, Image.FORMAT_RGB8)
 	var xOffset = 0
-	var yOffset = 0	
-	nav_generator.createNavigation(image, 10, highColor, highlightColor, -1, false, fieldSize, min(totalSizeX,totalSizeY), obj, navGenCallbackName)
-	return image
+	var yOffset = 0
+	nav_generator.load_patternFile()
+	nav_generator.createNavigation(imageT, highColor, highlightColor, -1, false, fieldSize, min(totalSizeX,totalSizeY), obj, navGenCallbackName)
+
 func navGenCallback(image):
-		texture.create_from_image(image, Texture.FLAG_MIPMAPS)
+	texture = ImageTexture.create_from_image(image)
+	$mapTex.texture = texture
 
 func update_pattern():
-	nav_generator = load("res://navGenerator.gd").new()
+	nav_generator = NavGenerator.new()
 	add_child(nav_generator)
 	if(self.is_inside_tree()):
-		texture = ImageTexture.new()
 		create_texture_with_pattern(self, "navGenCallback")
-#		texture.create_from_image(create_texture_with_pattern(), Texture.FLAG_MIPMAPS)
-		$mapTex.texture = texture
 
 func _ready():
 	print(MarkerStore.markers)
+
 	load_patternFile()
 	update_pattern()
 
 func zoom(factor):
-	print(factor)
-	$mapTex.rect_scale = $mapTex.rect_scale * factor
-
-func _on_Button_pressed():
-	zoom(1.2)
-
-func _on_ButtonMinus_pressed():
-	zoom(0.8)
+#	print(factor)
+	$mapTex.scale = $mapTex.scale * factor
 
 func add_marker(pos: Vector2, type: int):
-	var marker = Marker.instance()
+	var marker = Marker.instantiate()
 	marker.color = Color(1, 0, 0)
 	marker.type = type
-	marker.rect_position = pos - marker.rect_size/2
+	marker.position = pos - marker.size/2
 	markers.append(marker)
 	add_child(marker)
 	MarkerStore.add_store_marker(pos,type)
@@ -82,17 +77,21 @@ func highlight_index(posIndex, marker):
 	for pos in positions:
 		if pos == Vector2(-10, -10):
 			continue
-		var texture = ImageTexture.new()
-		texture.create_from_image(nav_generator.getSingleNavpatchTexture(posIndex, marker, patternSizeX), Texture.FLAG_MIPMAPS)
-		
+		#var im_texture = ImageTexture.new()
+		var im_texture = ImageTexture.create_from_image(nav_generator.getSingleNavpatchTexture(posIndex, marker, fieldSize)) #,Texture2D.FLAG_MIPMAPS
 		var texNode = TextureRect.new()
-		texNode.texture = texture
-		texNode.rect_position = pos - Vector2(0,texture.get_size().y) + Vector2(-2, 2)
+		texNode.texture = im_texture
+		texNode.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		texNode.position = pos - Vector2(0,im_texture.get_size().y) + Vector2(-2, 2)
 		highlights.append(texNode)
 		add_child(texNode)
 
+func remove_highlights():
+	for h in highlights:
+		remove_child(h)
+
 func add_arrow(from_pos: Vector2, to_pos: Vector2, type: int, color: Color):
-	var arrow = Marker.instance();
+	var arrow = Marker.instantiate();
 	arrow.color = color
 	arrow.type = type
 	arrow.from_pos = from_pos
@@ -106,15 +105,16 @@ func save_image():
 	img.save_png("user://navigationImage.png")
 
 func load_patternFile():
-	var file = File.new()
-	file.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json", File.READ)
+	var file = FileAccess.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json", FileAccess.READ)
 	var content = file.get_as_text()
 	file.close()
-	var json = JSON.parse(content)
-	var patternData = json.result
-	if(json.error):
-		print("json Parse error:", json.error)
-	self.fieldSize = patternData.generalData.fieldSize
-	self.pixelSize = patternData.generalData.pixelSize
-	self.markerBits = patternData.generalData.markerBits
-
+	var json = JSON.new()
+	var parseResultError = json.parse(content)
+	var patternData = json.data
+	if(parseResultError != Error.OK):
+		printerr("json Parse error:", parseResultError)
+	print("set field size from: ", fieldSize, " to: ", patternData.generalData.fieldSize)
+	fieldSize = int(patternData.generalData.fieldSize)
+	pixelSize = int(patternData.generalData.pixelSize)
+	self.markerBits = int(patternData.generalData.markerBits)
+	self.navigationStructure = patternData.navigation

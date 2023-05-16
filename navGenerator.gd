@@ -1,7 +1,9 @@
 extends Node
+var THREADED = true
+
 # the gap (in pixels) between two navpatches
 var GAP_NAVPATCHES = 1
-var NAVPATCHSIZE = 3
+var NAVPATCHSIZE = 4
 var BOXSTYLE = "Lshape2" #"Lshape", "box", "grid", "Lshape"
 var image
 var highColor
@@ -9,8 +11,16 @@ var highlightColor
 var highlightId
 var highlightMarker
 var imageSize
+var navFileData
+
+var navigationStructure
+var markerBits
+
 var positionCache = {}
+
 var thread
+var mutex
+var textureUpdateTime = 0
 var posCacheLocked = false
 func _init():
 	print("nav gen got initilaized")
@@ -28,7 +38,7 @@ func int2bin(value, digitcount):
 func navpatchDigitCount():
 	return pow(NAVPATCHSIZE, 2) - 1
 
-func addRectPixelCoord(x,y, offsetX, offsetY, col, im):
+func addRectPixelCoord(x, y, offsetX, offsetY, col, im):
 	var _x = offsetX+x
 	var _y = imageSize-(offsetY+y)
 	if(_x >= 0 and _x < imageSize and _y >= 0 and _y < imageSize):
@@ -51,7 +61,7 @@ func addNavpatch(x, y, id, isChunkMarker, offsetX, offsetY, img):
 	# add to poscache:
 	var posCacheId = id
 	if(isChunkMarker):
-		var chunkMarkerExtra = pow(2,NAVPATCHSIZE*NAVPATCHSIZE-1)
+		var chunkMarkerExtra = pow(2, NAVPATCHSIZE * NAVPATCHSIZE - 1)
 		posCacheId += chunkMarkerExtra
 	if not positionCache.keys().has(posCacheId):
 		positionCache[posCacheId] = []
@@ -66,14 +76,14 @@ func addNavpatch(x, y, id, isChunkMarker, offsetX, offsetY, img):
 	# A navpatch is 5x5 on 1\mu m x 1\mu m (bigger would be better but maybe not possible with the STM)
 	# There are two boxStyles box/grid. The grid style should produces simpler and smaller files and might be easier to read with the stm
 	if BOXSTYLE == "box":
-	  for i in range(0,size):
-		  addRectPixelCoord(x + i, y, offsetX, offsetY,col, img)
-	  for i in range(0,size-1):
-		  addRectPixelCoord(x + size - 1, y + i, offsetX, offsetY,col, img)
-	  for i in range(0,size):
-		  addRectPixelCoord(x + i, y + size - 1, offsetX, offsetY,col, img)
-	  for i in range(0,size-1):
-		  addRectPixelCoord(x, y + i, offsetX, offsetY, col, img)
+		for i in range(0,size):
+			addRectPixelCoord(x + i, y, offsetX, offsetY,col, img)
+		for i in range(0,size-1):
+			addRectPixelCoord(x + size - 1, y + i, offsetX, offsetY,col, img)
+		for i in range(0,size):
+			addRectPixelCoord(x + i, y + size - 1, offsetX, offsetY,col, img)
+		for i in range(0,size-1):
+			addRectPixelCoord(x, y + i, offsetX, offsetY, col, img)
 
 	if BOXSTYLE == "Lshape":
 		addRectLinePixelCoord(x-1,y,x+floor(size/2.0),y,offsetX, offsetY, col, img)
@@ -87,12 +97,71 @@ func addNavpatch(x, y, id, isChunkMarker, offsetX, offsetY, img):
 	if (isChunkMarker):
 		addRectPixelCoord(x + 1, y + 1, offsetX, offsetY,Color(255,0,0), img)
 	var stringNumber = int2bin(int(id), navpatchDigitCount())
+#	print("string number ", stringNumber)
 	var i = 0
 	for c in stringNumber:
 		if c == '1':
-			var idOffsetOne = i + 1
-			addRectPixelCoord(1 + x + idOffsetOne % NAVPATCHSIZE, y + 1 + floor(idOffsetOne / NAVPATCHSIZE), offsetX, offsetY, col, img)
+			var idOffsetMarker = i + 1
+			var borderOffset = 1
+			var xCoordInPatch = idOffsetMarker % NAVPATCHSIZE
+			var yCoordInPatch = floor(idOffsetMarker / NAVPATCHSIZE)
+			var pixelX = borderOffset + x + xCoordInPatch
+			var pixelY = borderOffset + y + yCoordInPatch
+
+			addRectPixelCoord(pixelX, pixelY, offsetX, offsetY, col, img)
 		i+=1
+#chunkProps
+#{
+#	"borderType": "Lshape",
+#	"size": [256,256],
+#	"markerIndex": 0,
+#	"markerBits": 0,
+#	"markerBitVal": 0,
+#	"markerFilled": false,
+#	"fieldSize": [3,3],
+#	"pos": {x:10, y:10}
+#}
+
+func createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX=-1, cutoffY=-1, im=null):
+	var img
+	var x = chunkProps.pos.x
+	var y = chunkProps.pos.y
+	var m_id = chunkProps.markerIndex
+#	var fieldSize = int(navFileData.generalData.fieldSize)
+	if(im == null):
+		img = image
+	else:
+		img = im
+	var numberOfIndicators = pow(2, navpatchDigitCount())
+	var max_NavpatchChunkWidth = navFileData.navigation.chunkSize#floor(sqrt(numberOfIndicators + 1))
+	var maxX = max_NavpatchChunkWidth if cutoffX == -1 else cutoffX
+	var maxY = max_NavpatchChunkWidth if cutoffY == -1 else cutoffY
+	var navpatchDistance = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
+
+	if navFileData.navigation.borderType == "grid":
+		for i in range(maxX):
+			addRectLinePixelCoord(i*navpatchDistance, 0, i*navpatchDistance, maxY*navpatchDistance, x, y, highColor, img)
+			print("grid vertical: ", i, " of ", maxX)
+		for j in range(maxY):
+			addRectLinePixelCoord(0, j*navpatchDistance, maxX*navpatchDistance, j*navpatchDistance, x, y, highColor, img)
+			print("grid horizontal: ", j, " of ", maxX)
+	print('after grid creating before navpatch')
+	for j in range(maxY):
+#		print('chunk Progress ',i/maxX * 100,'% (',i,'/', maxX,")")
+		#false # img.unlock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
+		if( Time.get_ticks_msec() - textureUpdateTime > 300 ):
+			print("time refresh stuff:", Time.get_ticks_msec(), ", ",textureUpdateTime)
+			textureUpdateTime = Time.get_ticks_msec()
+			obj.call_deferred(callback, img)
+		#false # img.lock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
+		for i in range(maxX):
+			if (j == 0 and i == 0):
+				addNavpatch(0, 0, m_id, true, x, y, img)
+			else:
+				var navPatchId =  j * max_NavpatchChunkWidth + i - 1;
+#				print("add navpatch with ID: ", navPatchId)
+				addNavpatch(i * navpatchDistance, j * navpatchDistance, navPatchId, false, x, y, img)
+
 
 func createNavigationChunk(x, y, id, obj, callback, cutoffX=-1, cutoffY=-1, im=null):
 	var img
@@ -114,24 +183,29 @@ func createNavigationChunk(x, y, id, obj, callback, cutoffX=-1, cutoffY=-1, im=n
 			addRectLinePixelCoord(0, j*navpatchDistance, maxX*navpatchDistance, j*navpatchDistance, x, y,highColor, img)
 			print("grid horizontal: ", j, " of ", maxX)
 	print('after grid creating before navpatch')
-	for i in range(maxX):
+	for j in range(maxY):
 #		print('chunk Progress ',i/maxX * 100,'% (',i,'/', maxX,")")
-		img.unlock()
-		obj.call_deferred(callback, img)
-		img.lock()
-		for j in range(maxY):
+		#false # img.unlock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
+		if( Time.get_ticks_msec() - textureUpdateTime > 300 ):
+			print("time refresh stuff:", Time.get_ticks_msec(), ", ",textureUpdateTime)
+			textureUpdateTime = Time.get_ticks_msec()
+			obj.call_deferred(callback, img)
+		#false # img.lock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
+		for i in range(maxX):
 			if (j == 0 and i == 0):
 				addNavpatch(0, 0, id, true, x, y, img)
 			else:
-				addNavpatch(i * navpatchDistance, j* navpatchDistance, j * max_NavpatchChunkWidth + i - 1, false, x, y, img)
+				var navPatchId =  j * max_NavpatchChunkWidth + i - 1;
+#				print("add navpatch with ID: ", navPatchId)
+				addNavpatch(i * navpatchDistance, j * navpatchDistance, navPatchId, false, x, y, img)
 
 func navigationChunkPixelSize():
 	var numberOfIndicators = pow(2, navpatchDigitCount())
 	var max_NavpatchChunkWidth = floor(sqrt(numberOfIndicators + 1))
 	var navpatchDistance = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
 	return max_NavpatchChunkWidth * navpatchDistance
-
-func createNavigation(pimage, patchCount, phighColor, phighlightColor, phighlightId, phighlightMarker, patternSize, maxSize, obj, callback):
+ 
+func createNavigation(pimage, phighColor, phighlightColor, phighlightId, phighlightMarker, patternSize, maxSize, obj, callback):
 	highColor = phighColor
 	highlightColor = phighlightColor
 	highlightId = phighlightId
@@ -139,43 +213,84 @@ func createNavigation(pimage, patchCount, phighColor, phighlightColor, phighligh
 	image = pimage
 	NAVPATCHSIZE = patternSize
 	imageSize = maxSize
+	var patchCount = 3
+	if (THREADED):
+		thread = Thread.new()
+#		thread.start(Callable(self, "_thread_createNavitation").bind([patchCount, maxSize, obj, callback]), Thread.PRIORITY_NORMAL)
+		thread.start(Callable(self, "_thread_createNavitation_file").bind([patchCount, maxSize, obj, callback]), Thread.PRIORITY_NORMAL)
+	else:
+#		_thread_createNavitation([patchCount, maxSize, obj, callback])
+		_thread_createNavitation_file([patchCount, maxSize, obj, callback])
 
-	thread = Thread.new()
-	thread.start(self, "_thread_createNavitation", [patchCount, maxSize, obj, callback], Thread.PRIORITY_HIGH)
-
+#func createNavigationWithFile(pimage, patchCount, phighColor, phighlightColor)
 func _thread_createNavitation(params):
-	# need to lock the image inside the thread
-	image.lock()
 	posCacheLocked = true
+	textureUpdateTime = Time.get_ticks_msec()
 	var patchCount = params[0]
 	var maxSize = params[1]
 	var obj = params[2]
 	var callback = params[3]
 	print("hello form thread")
 	var s = navigationChunkPixelSize()
-	for i in range(patchCount):
-		
-		print(i)
+	for chunkX in range(patchCount):
+		print(chunkX)
 		if maxSize != -1:
-			if s*(i) > maxSize:
+			if s*(chunkX) > maxSize:
 					continue
-		for j in range(patchCount):
-			print('j:', j)
+		for chunkY in range(patchCount):
 			var cutoffX = -1
 			var cutoffY = -1
+			print('chunkY:', chunkY)
 			if maxSize != -1:
-				if s*(j) > maxSize:
+				if s*(chunkY) > maxSize:
 					continue
-				if s*(i+1) > maxSize:
-					cutoffX = floor((maxSize - s*i) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
-				if s*(j+1) > maxSize:
-					cutoffY = floor((maxSize - s*j) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
-			print("before chunc Creation")
-			createNavigationChunk(s*i, s*j, j*patchCount+i, obj, callback,cutoffX,cutoffY)
-			image.unlock()
-			obj.call_deferred(callback, image)
-			image.lock()
-	image.unlock()
+				if s*(chunkX+1) > maxSize:
+					cutoffX = floor((maxSize - s*chunkX) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+				if s*(chunkY+1) > maxSize:
+					cutoffY = floor((maxSize - s*chunkY) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+			createNavigationChunk(s*chunkX, s*chunkY, chunkY*patchCount+chunkX, obj, callback, cutoffX, cutoffY)
+	obj.call_deferred(callback, image)
+	posCacheLocked = false
+	return
+func _thread_createNavitation_file(params):
+	
+#	navigationStructure.borderType
+#	navigationStructure.navSize
+#	navigationStructure.markerIndex
+#	self.navFileData.markerBits
+#	self.navFileData.markerBitVal
+#	self.navFileData.markerFilled
+	
+	var fieldSize = int(self.navFileData.generalData.fieldSize)
+	posCacheLocked = true
+	textureUpdateTime = Time.get_ticks_msec()
+	var maxSize = params[1]
+	var obj = params[2]
+	var patchCount = params[0]
+	var callback = params[3]
+	print("hello form thread")
+	var navpatchSize = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
+	var s = navFileData.navigation.chunkSize * navpatchSize
+#	var s = navigationChunkPixelSize()
+	for chunkX in range(self.navFileData.navigation.chunks.size()):
+		if maxSize != -1:
+			if s*(chunkX) > maxSize:
+					continue
+		for chunkY in self.navFileData.navigation.chunks[chunkX].size():
+			var cutoffX = -1
+			var cutoffY = -1
+			print('chunkY:', chunkY)
+			if maxSize != -1:
+				if s*(chunkY) > maxSize:
+					continue
+				if s*(chunkX+1) > maxSize:
+					cutoffX = floor((maxSize - s*chunkX) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+				if s*(chunkY+1) > maxSize:
+					cutoffY = floor((maxSize - s*chunkY) / ((NAVPATCHSIZE + 2 + GAP_NAVPATCHES)))
+			var chunkProps = self.navFileData.navigation.chunks[chunkX][chunkY]
+			chunkProps.pos = {"x": s * chunkX,"y": s * chunkY}
+			createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX, cutoffY)
+	obj.call_deferred(callback, image)
 	posCacheLocked = false
 	return
 
@@ -184,11 +299,8 @@ func getSingleNavpatchTexture(pId, pMarker, patternSize):
 	highlightMarker = pMarker
 	NAVPATCHSIZE = patternSize
 	imageSize = patternSize+3
-	var img = Image.new()
-	img.create(imageSize, imageSize, false, Image.FORMAT_RGB8)
-	img.lock()
+	var img = Image.create(imageSize, imageSize, false, Image.FORMAT_RGB8)
 	addNavpatch(0, 0, pId, pMarker,2,2, img)
-	img.unlock()
 	return img
 
 func getPositionsForIndex(id, marker):
@@ -199,12 +311,28 @@ func getPositionsForIndex(id, marker):
 	if marker:
 		var chunkMarkerExtra = pow(2, NAVPATCHSIZE*NAVPATCHSIZE - 1)
 		posCacheId += chunkMarkerExtra
-	if positionCache.keys().has(posCacheId):
+	if positionCache.has(posCacheId):
 		return positionCache[posCacheId]
 	else:
 		printerr("The index: "+str(posCacheId)+" is not part of the showed pattern")
 		return [Vector2(-10, -10)]
 		
 # Thread must be disposed (or "joined"), for portability.
+func load_patternFile():
+	var file = FileAccess.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json", FileAccess.READ)
+	var content = file.get_as_text()
+	file.close()
+	var json = JSON.new()
+	var parseResultError = json.parse(content)
+	self.navFileData = json.data
+	if(parseResultError != Error.OK):
+		printerr("json Parse error:", parseResultError)
+	print("set field size from: ", self.navFileData.generalData.fieldSize, " to: ", self.navFileData.generalData.fieldSize)
+#	fieldSize = int(self.navFileData.generalData.fieldSize)
+#	pixelSize = int(self.navFileData.generalData.pixelSize)
+	markerBits = int(self.navFileData.generalData.markerBits)
+	navigationStructure = self.navFileData.navigation
+	self.NAVPATCHSIZE = self.navFileData.generalData.fieldSize
+
 func _exit_tree():
 	thread.wait_to_finish()

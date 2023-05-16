@@ -8,16 +8,16 @@ func _ready():
 	add_user_signal("markers_updated")
 
 func load_markers_from_file():
-	var file = File.new()
-	file.open("user://marker_save.dat", File.READ)
+	var file = FileAccess.open("user://marker_save.dat", FileAccess.READ)
 	var content = file.get_as_text()
 	file.close()
-	markers = parse_json(content)
+	var test_json_conv = JSON.new()
+	test_json_conv.parse(content)
+	markers = test_json_conv.get_data()
 
 func save_markers_to_file():
-	var file = File.new()
-	var content = to_json(markers)
-	file.open("user://marker_save.dat", File.WRITE)
+	var content = JSON.stringify(markers)
+	var file = FileAccess.open("user://marker_save.dat", FileAccess.WRITE)
 	print("saved: ", markers, content)
 	file.store_string(content)
 	file.close()

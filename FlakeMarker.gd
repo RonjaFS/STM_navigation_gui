@@ -1,12 +1,12 @@
-tool
+@tool
 extends Control
 
 
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-export var color = Color(0.3,0.3,0.8) setget update_color
-export var type = 0 setget update_type
+@export var color = Color(0.3,0.3,0.8) : set = update_color
+@export var type = 0 : set = update_type
 func update_type(new):
 	type = new
 	
