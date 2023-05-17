@@ -26,12 +26,14 @@ func _ready():
 	addBorderCorner(5,-2)
 	addBorderCorner(-2,5)
 	addBorderCorner(5,5)
+
 func anchor_center(node):
 	var this_size = min(self.size.x, self.size.y)
 	node.offset_bottom = this_size/2 - side_gap
 	node.offset_top = -this_size/2 + side_gap
 	node.offset_left = -this_size/2 + side_gap
 	node.offset_right = this_size/2 - side_gap
+
 func addBorderCorner(posx, posy):
 	var border_count_right = sizeX
 	var border_count_top = sizeY
@@ -39,7 +41,7 @@ func addBorderCorner(posx, posy):
 		addCR(x_i+posx,0+posy,$GridContainer.size, $GridContainer.position)
 	for y_i in range( -border_count_top, 0):
 		addCR(0+posx,y_i+posy,$GridContainer.size, $GridContainer.position)
-	#addCR(posx,posy+1,$GridContainer.size, $GridContainer.position)
+
 func addCR(x,y,grid_size, grid_position):
 	var pixel_size = grid_size.x / sizeX
 	var cr = ColorRect.new()
@@ -48,7 +50,9 @@ func addCR(x,y,grid_size, grid_position):
 	cr.size = Vector2(pixel_size+1,pixel_size+1)
 	self.add_child(cr)
 	self.move_child(cr,1)
+	cr.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
 	cr.set_anchors_preset(Control.PRESET_CENTER)
+
 func getIndexAndMarker():
 	var number = 0
 	var marker = false
@@ -65,7 +69,7 @@ func getIndexAndMarker():
 		i+=1
 	return [number,marker]
 
-func update_marker():
+func highlight_navpatches():
 	var indexAndMarker = getIndexAndMarker()
 	mapNode.set_marked_index(indexAndMarker[1], indexAndMarker[0])
 
@@ -73,17 +77,10 @@ func childIndexForNumber(n):
 	var line = floor(n/sizeX)
 	return line*sizeX + ((sizeX-1)-n%sizeX)
 
-func _on_updateButton_pressed():
-	update_marker()
-
-func _on_gotoMarker_pressed():
+func _on_goto_button_pressed():
 	var indexAndMarker = getIndexAndMarker()
-	mapNode.scroll_to(indexAndMarker[0], indexAndMarker[1])
-
-func _on_addMarker_pressed():
-	#var indexAndMarker = getIndexAndMarker()
-	#mapNode.add_marker(indexAndMarker[0], indexAndMarker[1])
-	mapNode.remove_all_marker()
+	Signals.scroll_to_index.emit(indexAndMarker[0], indexAndMarker[1])
+#	mapNode.scroll_to(indexAndMarker[0], indexAndMarker[1])
 
 func _on_SaveButton_pressed():
 	MarkerStore.save_markers_to_file()
@@ -94,9 +91,10 @@ func _on_LoadButton_pressed():
 func _on_RemoveMarkerButton_pressed():
 	MarkerStore.remove_last()
 
-func _on_saveImageButton_pressed():
-	get_node("../map").save_navigation_cache()
+
+func _on_remove_highlights_button_pressed():
+	Signals.remove_navpatches_pressed.emit()
 
 
-func _on_rebuild_button_pressed():
-	get_node("../map").update_pattern(true)
+func _on_highlight_navpatch_pressed():
+	highlight_navpatches()

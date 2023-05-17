@@ -1,0 +1,45 @@
+[gd_scene load_steps=3 format=3 uid="uid://rh3gcja5rpnr"]
+
+[ext_resource type="Script" path="res://NotificationPanel/notificationPanel.gd" id="1_fl8mf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wwe5w"]
+bg_color = Color(1, 1, 1, 0.933333)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.0431373, 0.729412, 0.694118, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="ColorRect" type="Panel"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -60.0
+offset_right = 200.0
+offset_bottom = -20.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_wwe5w")
+script = ExtResource("1_fl8mf")
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Labels" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0

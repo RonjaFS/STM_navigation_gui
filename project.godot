@@ -18,7 +18,13 @@ config/icon="res://icon.png"
 
 [autoload]
 
-MarkerStore="*res://markerStore.gd"
+MarkerStore="*res://GlobalAutoload/markerStore.gd"
+Signals="*res://GlobalAutoload/Signals.gd"
+GdsExporter="*res://gdsPythonConverter/gds_exporter.gd"
+
+[display]
+
+window/subwindows/embed_subwindows=false
 
 [physics]
 
@@ -26,5 +32,4 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
-renderer/rendering_method="mobile"
 environment/defaults/default_environment="res://default_env.tres"

@@ -72,25 +72,17 @@ offset_top = 24.0
 offset_bottom = 24.0
 alignment = 1
 
-[node name="updateButton" type="Button" parent="HBoxContainer"]
+[node name="highlightNavpatch" type="Button" parent="HBoxContainer"]
 layout_mode = 2
-text = "Show Pattern"
+text = "Highlight pattern"
 
-[node name="addMarker" type="Button" parent="HBoxContainer"]
+[node name="removeHighlightsButton" type="Button" parent="HBoxContainer"]
 layout_mode = 2
 text = "Remove marker"
 
-[node name="gotoMarker" type="Button" parent="HBoxContainer"]
+[node name="gotoButton" type="Button" parent="HBoxContainer"]
 layout_mode = 2
 text = "Goto Pattern"
-
-[node name="saveImageButton" type="Button" parent="HBoxContainer"]
-layout_mode = 2
-text = "save img"
-
-[node name="rebuildButton" type="Button" parent="HBoxContainer"]
-layout_mode = 2
-text = "Rebuild Nav"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 visible = false
@@ -142,11 +134,11 @@ text = "test"
 layout_mode = 2
 text = "test"
 
-[connection signal="pressed" from="HBoxContainer/updateButton" to="." method="_on_updateButton_pressed"]
-[connection signal="pressed" from="HBoxContainer/addMarker" to="." method="_on_addMarker_pressed"]
-[connection signal="pressed" from="HBoxContainer/gotoMarker" to="." method="_on_gotoMarker_pressed"]
-[connection signal="pressed" from="HBoxContainer/saveImageButton" to="." method="_on_saveImageButton_pressed"]
-[connection signal="pressed" from="HBoxContainer/rebuildButton" to="." method="_on_rebuild_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/highlightNavpatch" to="." method="_on_updateButton_pressed"]
+[connection signal="pressed" from="HBoxContainer/highlightNavpatch" to="." method="_on_highlight_navpatch_pressed"]
+[connection signal="pressed" from="HBoxContainer/removeHighlightsButton" to="." method="_on_addMarker_pressed"]
+[connection signal="pressed" from="HBoxContainer/removeHighlightsButton" to="." method="_on_remove_highlights_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/gotoButton" to="." method="_on_goto_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/SaveButton" to="." method="_on_SaveButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/LoadButton" to="." method="_on_LoadButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/RemoveMarkerButton" to="." method="_on_RemoveMarkerButton_pressed"]

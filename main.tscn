@@ -1,7 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://6k432p8u3hdn"]
+[gd_scene load_steps=9 format=3 uid="uid://6k432p8u3hdn"]
 
 [ext_resource type="PackedScene" uid="uid://ckq7v28movqv0" path="res://Field.tscn" id="1"]
+[ext_resource type="Script" path="res://TinyScripts/PatternOptionButton.gd" id="1_3f8qg"]
+[ext_resource type="Script" path="res://TinyScripts/FileOptionButton.gd" id="1_e261l"]
 [ext_resource type="PackedScene" uid="uid://bn617ejbcowii" path="res://map.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://rh3gcja5rpnr" path="res://NotificationPanel/notificationPanel.tscn" id="5_d55q7"]
+[ext_resource type="Script" path="res://TinyScripts/FileDialog.gd" id="6_ff6j8"]
+[ext_resource type="Script" path="res://TinyScripts/AcceptDialog.gd" id="7_fs15r"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2bhqx"]
+bg_color = Color(1, 1, 1, 1)
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -13,15 +21,113 @@ offset_right = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-layout_mode = 0
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
 
-[node name="Field" parent="HBoxContainer" instance=ExtResource("1")]
+[node name="ColorRect" type="PanelContainer" parent="VBoxContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_2bhqx")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/ColorRect"]
+layout_mode = 2
+
+[node name="FileOptionButton" type="MenuButton" parent="VBoxContainer/ColorRect/HBoxContainer2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_colors/font_hover_color = Color(0.701961, 0.701961, 0.701961, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+text = "File"
+item_count = 3
+popup/item_0/text = "Export Image"
+popup/item_0/id = 0
+popup/item_1/text = "Save Project"
+popup/item_1/id = 1
+popup/item_2/text = "Export GdsII"
+popup/item_2/id = 2
+script = ExtResource("1_e261l")
+
+[node name="PatternOptionButton" type="MenuButton" parent="VBoxContainer/ColorRect/HBoxContainer2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0.803922, 0.803922, 0.803922, 1)
+theme_override_colors/font_hover_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+text = "Pattern"
+item_count = 1
+popup/item_0/text = "Rebuild Pattern"
+popup/item_0/id = 0
+script = ExtResource("1_3f8qg")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Field" parent="VBoxContainer/HBoxContainer" instance=ExtResource("1")]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="map" parent="HBoxContainer" instance=ExtResource("2")]
+[node name="map" parent="VBoxContainer/HBoxContainer" instance=ExtResource("2")]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="ColorRect" parent="." instance=ExtResource("5_d55q7")]
+layout_mode = 1
+anchors_preset = -1
+
+[node name="FileDialog" type="FileDialog" parent="."]
+initial_position = 2
+size = Vector2i(984, 300)
+ok_button_text = "Save"
+dialog_hide_on_ok = true
+access = 2
+script = ExtResource("6_ff6j8")
+
+[node name="CopyCommandDialog" type="Window" parent="."]
+initial_position = 1
+title = "Export Command"
+size = Vector2i(500, 300)
+visible = false
+script = ExtResource("7_fs15r")
+
+[node name="Box" type="VBoxContainer" parent="CopyCommandDialog"]
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="CopyCommandDialog/Box"]
+layout_mode = 2
+text = "Run this command in a terminal to generate the gds file:"
+autowrap_mode = 2
+
+[node name="CodeEdit" type="CodeEdit" parent="CopyCommandDialog/Box"]
+layout_mode = 2
+size_flags_vertical = 3
+editable = false
+wrap_mode = 1
+
+[node name="copyButton" type="Button" parent="CopyCommandDialog/Box"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Copy!"
+
+[connection signal="file_selected" from="FileDialog" to="FileDialog" method="_on_file_selected"]
+[connection signal="close_requested" from="CopyCommandDialog" to="CopyCommandDialog" method="_on_close_requested"]
+[connection signal="pressed" from="CopyCommandDialog/Box/copyButton" to="CopyCommandDialog" method="_on_copy_button_pressed"]

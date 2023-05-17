@@ -240,6 +240,7 @@ func createNavigation(pimage, phighColor, phighlightColor, phighlightId, phighli
 			positionCache = FileAccess.open(cachePositionCachePath, FileAccess.READ).get_var()
 			obj.call(callback, image, true)
 			posCacheLocked = false
+			Signals.show_notification.emit("Navigation loaded from disk.")
 			return
 	if (THREADED):
 		thread = Thread.new()
@@ -285,7 +286,7 @@ func _thread_createNavitation_file(params):
 #	self.navFileData.markerBits
 #	self.navFileData.markerBitVal
 #	self.navFileData.markerFilled
-	
+	Signals.show_notification.emit("Start generating pattern.")
 	var fieldSize = int(self.navFileData.generalData.fieldSize)
 	posCacheLocked = true
 	textureUpdateTime = Time.get_ticks_msec()
@@ -316,6 +317,7 @@ func _thread_createNavitation_file(params):
 			chunkProps.pos = {"x": s * chunkX,"y": s * chunkY}
 			createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX, cutoffY)
 	obj.call_deferred(callback, image, true)
+	Signals.show_notification.emit("Navigation pattern was generated.")
 	posCacheLocked = false
 	return
 
@@ -351,14 +353,15 @@ func get_totalSize():
 		chunkXCount = max(chunkXCount, chunks.size())
 	return [chunkS * navpatchSize * chunkXCount, chunkS * navpatchSize * chunkYCount]
 # Thread must be disposed (or "joined"), for portability.
+
 func load_patternFile():
 	var file = FileAccess.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json", FileAccess.READ)
 	var content = file.get_as_text()
-	hash_of_file = content.hash()
 	file.close()
 	var json = JSON.new()
 	var parseResultError = json.parse(content)
 	self.navFileData = json.data
+	hash_of_file = JSON.stringify(self.navFileData).hash()
 	if(parseResultError != Error.OK):
 		printerr("json Parse error:", parseResultError)
 	print("set field size from: ", self.navFileData.generalData.fieldSize, " to: ", self.navFileData.generalData.fieldSize)

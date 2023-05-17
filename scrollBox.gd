@@ -9,6 +9,7 @@ var tween
 func _ready():
 	vbar.connect("value_changed",Callable(self,"_on_vbar"))
 	hbar.connect("value_changed",Callable(self,"_on_hbar"))
+	Signals.scroll_to_index.connect(scroll_to_index)
 
 func _input(event):
 	if event is InputEventMouseButton:
@@ -25,7 +26,8 @@ func _input(event):
 				scale_at_pivot(zoom_pos, zoom_factor)
 
 			if event.button_index == MOUSE_BUTTON_RIGHT:
-				child.add_marker(child.get_local_mouse_position(),0)
+				Signals.add_marker.emit(child.get_local_mouse_position(), 0)
+#				child.add_marker(child.get_local_mouse_position(), 0)
 				# DRAG
 	if event is InputEventMouseMotion:
 		if event.button_mask == MOUSE_BUTTON_LEFT:
@@ -64,7 +66,6 @@ func scroll_to_index(index, marker):
 
 func _on_in_Button_pressed():
 	scale_at_pivot(self.size/2, 1.1)
-	$Control.update_pattern()
 
 func _on_out_Button_pressed():
 	scale_at_pivot(self.size/2, 0.9)

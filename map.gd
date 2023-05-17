@@ -44,19 +44,23 @@ func navGenCallback(image, done):
 		save_navigation_cache()
 
 func update_pattern(forcePatternRebuild = false):
-	nav_generator = NavGenerator.new()
-	add_child(nav_generator)
+	if not nav_generator:
+		nav_generator = NavGenerator.new()
+		add_child(nav_generator)
 	if(self.is_inside_tree()):
 		create_texture_with_pattern(self, "navGenCallback", forcePatternRebuild)
 
 func _ready():
 	print(MarkerStore.markers)
-
+	Signals.export_image_pressed.connect(save_navigation_cache)
+	Signals.remove_navpatches_pressed.connect(remove_highlights)
+	Signals.add_marker.connect(add_marker)
+	Signals.rebuild_pattern_pressed.connect(func(): update_pattern(true))
+#	Signals.add_marker_by_index.connect(add_marker_by_index)
 #	load_patternFile()
 	update_pattern()
 
 func zoom(factor):
-#	print(factor)
 	$mapTex.scale = $mapTex.scale * factor
 
 func add_marker(pos: Vector2, type: int):
@@ -69,11 +73,11 @@ func add_marker(pos: Vector2, type: int):
 	MarkerStore.add_store_marker(pos,type)
 	return marker
 
-func add_marker_by_index(posIndex,marker, type):
-	var pos = nav_generator.getPositionsForIndex(posIndex, marker)[0]
-	if pos == Vector2(-10,-10):
-		return
-	add_marker(pos, type)
+#func add_marker_by_index(posIndex, marker, type):
+#	var pos = nav_generator.getPositionsForIndex(posIndex, marker)[0]
+#	if pos == Vector2(-10,-10):
+#		return
+#	add_marker(pos, type)
 
 func highlight_index(posIndex, marker):
 	var positions = nav_generator.getPositionsForIndex(posIndex, marker).duplicate()
@@ -103,14 +107,18 @@ func add_arrow(from_pos: Vector2, to_pos: Vector2, type: int, color: Color):
 	add_child(arrow)
 	return arrow
 
-func save_navigation_cache():
+func save_navigation_cache(customPath = null):
 	var img = $mapTex.texture.get_image()
-	img.save_png("~/navigationImage2.png")
-	img.save_png("~/navigation_"+str(nav_generator.hash_of_file)+".png")
-	img.save_png("user://navigation_"+str(nav_generator.hash_of_file)+".png")
-	var file = FileAccess.open("user://navigation_positionCache_"+str(nav_generator.hash_of_file)+".json", FileAccess.WRITE)
-	file.store_var(nav_generator.positionCache)
-	print(DirAccess.open("user://").get_files())
+	var pathImage = "user://navigation_"+str(nav_generator.hash_of_file)+".png"
+	var pathPosCache = "user://navigation_positionCache_"+str(nav_generator.hash_of_file)+".json"
+	GdsExporter.currentNavigationImagePath = pathImage
+	if customPath:
+		img.save_png(customPath)
+	else:
+		img.save_png(pathImage)
+		var file = FileAccess.open(pathPosCache, FileAccess.WRITE)
+		file.store_var(nav_generator.positionCache)
+	Signals.show_notification.emit("Navigation pattern stored on disk.")
 
 #func load_projectFile():
 #	var file = FileAccess.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/exampleProject.json", FileAccess.READ)

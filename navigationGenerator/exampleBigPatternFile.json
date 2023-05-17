@@ -5,7 +5,7 @@
 		"markerBits": 1
 	},
 	"navigation": {
-		"chunkSize": 10,
+		"chunkSize": 80,
 		"pixelSize": 200,
 		"fieldSize": 4,
 		"markerBits": 1,
