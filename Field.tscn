@@ -1,60 +1,31 @@
-[gd_scene load_steps=9 format=3 uid="uid://ckq7v28movqv0"]
+[gd_scene load_steps=4 format=3 uid="uid://ckq7v28movqv0"]
 
 [ext_resource type="Script" path="res://Field.gd" id="1"]
-[ext_resource type="Script" path="res://MarkerListView.gd" id="3"]
-
-[sub_resource type="StyleBoxFlat" id="1"]
-bg_color = Color(0.133333, 0.133333, 0.133333, 1)
-
-[sub_resource type="StyleBoxFlat" id="7"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 1)
-
-[sub_resource type="StyleBoxFlat" id="3"]
-bg_color = Color(0.105882, 0.105882, 0.105882, 1)
-
-[sub_resource type="StyleBoxFlat" id="4"]
-bg_color = Color(0, 0, 0, 1)
-
-[sub_resource type="StyleBoxFlat" id="5"]
-bg_color = Color(0.180392, 0.654902, 1, 1)
-
-[sub_resource type="Theme" id="6"]
-Button/colors/font_color = Color(1, 1, 1, 1)
-Button/colors/font_color_disabled = Color(0.901961, 0.901961, 0.901961, 0.403922)
-Button/colors/font_color_focus = Color(1, 1, 1, 1)
-Button/colors/font_color_hover = Color(1, 1, 1, 1)
-Button/colors/font_color_pressed = Color(1, 1, 1, 1)
-Button/constants/h_separation = 2
-Button/fonts/font = null
-Button/styles/disabled = SubResource("1")
-Button/styles/focus = SubResource("7")
-Button/styles/hover = SubResource("3")
-Button/styles/normal = SubResource("4")
-Button/styles/pressed = SubResource("5")
+[ext_resource type="Theme" uid="uid://bvhxyowku2mqb" path="res://PatternTheme.tres" id="2_swqpa"]
+[ext_resource type="PackedScene" uid="uid://cqixk8cpx1yh4" path="res://MarkerMenu/MarkerMenu.tscn" id="3_e6t0k"]
 
 [node name="Field" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 641.0
 offset_bottom = 567.0
-theme = SubResource("6")
 script = ExtResource("1")
 sizeX = 4
 sizeY = 4
 
 [node name="ColorRect" type="ColorRect" parent="."]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 10.0
+offset_left = -1.0
+offset_right = 9.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="GridContainer" type="GridContainer" parent="."]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -63,6 +34,9 @@ offset_left = -100.0
 offset_top = -100.0
 offset_right = 100.0
 offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_swqpa")
 columns = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
@@ -78,67 +52,27 @@ text = "Highlight pattern"
 
 [node name="removeHighlightsButton" type="Button" parent="HBoxContainer"]
 layout_mode = 2
-text = "Remove marker"
+text = "Remove highlights"
 
 [node name="gotoButton" type="Button" parent="HBoxContainer"]
 layout_mode = 2
 text = "Goto Pattern"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-visible = false
-layout_mode = 0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -45.0
-offset_bottom = 6.0
+[node name="Window" type="Window" parent="."]
+title = "Marker List"
+position = Vector2i(-400, 0)
+size = Vector2i(450, 600)
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-layout_mode = 2
-alignment = 1
-
-[node name="SaveButton" type="Button" parent="VBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "save"
-
-[node name="LoadButton" type="Button" parent="VBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "load"
-
-[node name="RemoveMarkerButton" type="Button" parent="VBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "remove last marker"
-
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
-layout_mode = 2
-script = ExtResource("3")
-
-[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-text = "test"
-
-[node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-text = "test"
-
-[node name="Label3" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-text = "test"
-
-[node name="Label4" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-text = "test"
+[node name="VBoxContainer" parent="Window" instance=ExtResource("3_e6t0k")]
+anchors_preset = 15
+anchor_top = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_vertical = 2
 
 [connection signal="pressed" from="HBoxContainer/highlightNavpatch" to="." method="_on_updateButton_pressed"]
 [connection signal="pressed" from="HBoxContainer/highlightNavpatch" to="." method="_on_highlight_navpatch_pressed"]
 [connection signal="pressed" from="HBoxContainer/removeHighlightsButton" to="." method="_on_addMarker_pressed"]
 [connection signal="pressed" from="HBoxContainer/removeHighlightsButton" to="." method="_on_remove_highlights_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/gotoButton" to="." method="_on_goto_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/SaveButton" to="." method="_on_SaveButton_pressed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/LoadButton" to="." method="_on_LoadButton_pressed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/RemoveMarkerButton" to="." method="_on_RemoveMarkerButton_pressed"]

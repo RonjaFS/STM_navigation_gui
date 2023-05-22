@@ -5,6 +5,8 @@ var zoom = 1
 @onready var hbar = $HScrollBar
 @onready var vbar = $VScrollBar
 @export var GOTO_ZOOM = 5
+@export var MaxZoom = 20
+@export var MinZoom = 0.2
 var tween
 func _ready():
 	vbar.connect("value_changed",Callable(self,"_on_vbar"))
@@ -37,8 +39,8 @@ func scale_at_pivot(p, factor):
 	var old_scale = child.scale
 	child.scale *= factor
 	# cap rect scale:
-	child.scale = Vector2(min(child.scale.x, 20), min(child.scale.y, 20))
-	child.scale = Vector2(max(child.scale.x, 0.2), max(child.scale.y, 0.2))
+	child.scale = Vector2(min(child.scale.x, MaxZoom), min(child.scale.y, MaxZoom))
+	child.scale = Vector2(max(child.scale.x, MinZoom), max(child.scale.y, MinZoom))
 	var actually_scaled_factor = child.scale.x/old_scale.x
 	if old_scale != child.scale:
 		child.position -= (p-child.position)*(actually_scaled_factor-1)

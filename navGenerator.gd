@@ -228,7 +228,6 @@ func createNavigation(pimage, phighColor, phighlightColor, phighlightId, phighli
 	image = pimage
 	NAVPATCHSIZE = patternSize
 	imageSize = maxSize
-	var patchCount = 3
 	
 	print(DirAccess.get_files_at("user://"))
 	if not forcePatternRebuild:
@@ -244,9 +243,9 @@ func createNavigation(pimage, phighColor, phighlightColor, phighlightId, phighli
 			return
 	if (THREADED):
 		thread = Thread.new()
-		thread.start(Callable(self, "_thread_createNavitation_file").bind([patchCount, maxSize, obj, callback]), Thread.PRIORITY_NORMAL)
+		thread.start(Callable(self, "_thread_createNavitation_file").bind([ maxSize, obj, callback]), Thread.PRIORITY_NORMAL)
 	else:
-		_thread_createNavitation_file([patchCount, maxSize, obj, callback])
+		_thread_createNavitation_file([ maxSize, obj, callback])
 
 #func _thread_createNavitation(params):
 #	posCacheLocked = true
@@ -290,10 +289,9 @@ func _thread_createNavitation_file(params):
 	var fieldSize = int(self.navFileData.generalData.fieldSize)
 	posCacheLocked = true
 	textureUpdateTime = Time.get_ticks_msec()
-	var maxSize = params[1]
-	var obj = params[2]
-	var patchCount = params[0]
-	var callback = params[3]
+	var maxSize = params[0]
+	var obj = params[1]
+	var callback = params[2]
 	print("hello form thread")
 	var navpatchSize = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
 	var s = navFileData.navigation.chunkSize * navpatchSize
@@ -355,7 +353,10 @@ func get_totalSize():
 # Thread must be disposed (or "joined"), for portability.
 
 func load_patternFile():
-	var file = FileAccess.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json", FileAccess.READ)
+	var path = "/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json"
+	if ProjectStore.patternFilePath != null:
+		path = ProjectStore.patternFilePath 
+	var file = FileAccess.open(path, FileAccess.READ)
 	var content = file.get_as_text()
 	file.close()
 	var json = JSON.new()
@@ -373,4 +374,5 @@ func load_patternFile():
 	#self.navFileData.noPatternAreas
 
 func _exit_tree():
-	thread.wait_to_finish()
+	if thread:
+		thread.wait_to_finish()

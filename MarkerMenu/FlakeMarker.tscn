@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dh540gw8phh4y"]
+
+[ext_resource type="Script" path="res://MarkerMenu/FlakeMarker.gd" id="1_v3owf"]
+[ext_resource type="Texture2D" uid="uid://c7y5wel1aiqfs" path="res://flakeIcon.png" id="2_yb74k"]
+
+[node name="FlakeMarker" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 15.0
+offset_bottom = 15.0
+script = ExtResource("1_v3owf")
+
+[node name="FlakeIcon" type="Sprite2D" parent="."]
+modulate = Color(0.3, 0.3, 0.8, 1)
+position = Vector2(7.5, 7.5)
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("2_yb74k")

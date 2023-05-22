@@ -1,5 +1,4 @@
 extends Control
-#tool
 
 var nav_generator
 var NavGenerator = preload("res://navGenerator.gd")
@@ -13,19 +12,30 @@ var NavGenerator = preload("res://navGenerator.gd")
 @export var highlightColor = Color(200,100,0)
 @export var highlightId = 1
 @export var hightlightMarker = false
-@export var update = false : set = update_set
 
-var markers = []
+var mapMarkerDict = {}
 var highlights = []
 var arrows = []
 var hash_of_file = ""
 var navigationStructure
 #var Arrow = preload("res://Arrow.tscn")
-var Marker = preload("res://FlakeMarker.tscn")
+var FlakeMarkerPacked = preload("res://MarkerMenu/FlakeMarker.tscn")
 var texture
 
-func update_set(u):
-	update_pattern()
+func _ready():
+	print(MarkerStore.markers)
+	Signals.export_image_pressed.connect(save_navigation_cache)
+	Signals.remove_navpatches_pressed.connect(remove_highlights)
+	Signals.rebuild_pattern_pressed.connect(func(): update_pattern(true))
+	Signals.highlight_navpatches_pressed.connect(highlight_index)
+	Signals.marker_changed.connect(on_marker_changed)
+	Signals.project_changed.connect(update_pattern)
+#	Signals.add_marker_by_index.connect(add_marker_by_index)
+#	load_patternFile()
+# Dont just update the pattern if no project is set
+# TODO open last project on startup
+#	update_pattern()
+
 
 func create_texture_with_pattern(obj, navGenCallbackName, forcePatternRebuild):
 	nav_generator.load_patternFile()
@@ -50,34 +60,19 @@ func update_pattern(forcePatternRebuild = false):
 	if(self.is_inside_tree()):
 		create_texture_with_pattern(self, "navGenCallback", forcePatternRebuild)
 
-func _ready():
-	print(MarkerStore.markers)
-	Signals.export_image_pressed.connect(save_navigation_cache)
-	Signals.remove_navpatches_pressed.connect(remove_highlights)
-	Signals.add_marker.connect(add_marker)
-	Signals.rebuild_pattern_pressed.connect(func(): update_pattern(true))
-#	Signals.add_marker_by_index.connect(add_marker_by_index)
-#	load_patternFile()
-	update_pattern()
-
 func zoom(factor):
 	$mapTex.scale = $mapTex.scale * factor
 
-func add_marker(pos: Vector2, type: int):
-	var marker = Marker.instantiate()
-	marker.color = Color(1, 0, 0)
-	marker.type = type
-	marker.position = pos - marker.size/2
-	markers.append(marker)
-	add_child(marker)
-	MarkerStore.add_store_marker(pos,type)
-	return marker
-
-#func add_marker_by_index(posIndex, marker, type):
-#	var pos = nav_generator.getPositionsForIndex(posIndex, marker)[0]
-#	if pos == Vector2(-10,-10):
-#		return
-#	add_marker(pos, type)
+func on_marker_changed():
+	for m in mapMarkerDict:
+		remove_child(mapMarkerDict[m])
+	mapMarkerDict.clear()
+	for m in MarkerStore.markers.values():
+		var markerNode = MarkerStore.createNodeForMarker(m)
+		mapMarkerDict[m.id] = markerNode
+		markerNode.position = m.pos - m.size/2
+		markerNode.visible = m.visible
+		add_child(markerNode)
 
 func highlight_index(posIndex, marker):
 	var positions = nav_generator.getPositionsForIndex(posIndex, marker).duplicate()
@@ -98,7 +93,7 @@ func remove_highlights():
 		remove_child(h)
 
 func add_arrow(from_pos: Vector2, to_pos: Vector2, type: int, color: Color):
-	var arrow = Marker.instantiate();
+	var arrow = FlakeMarkerPacked.instantiate();
 	arrow.color = color
 	arrow.type = type
 	arrow.from_pos = from_pos

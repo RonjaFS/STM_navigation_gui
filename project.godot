@@ -18,13 +18,21 @@ config/icon="res://icon.png"
 
 [autoload]
 
-MarkerStore="*res://GlobalAutoload/markerStore.gd"
+MarkerStore="*res://GlobalAutoload/MarkerStore.gd"
 Signals="*res://GlobalAutoload/Signals.gd"
 GdsExporter="*res://gdsPythonConverter/gds_exporter.gd"
+ProjectStore="*res://GlobalAutoload/projectStore.gd"
 
 [display]
 
+window/size/viewport_width=1400
+window/size/viewport_height=800
 window/subwindows/embed_subwindows=false
+
+[gui]
+
+theme/default_theme_scale=1.2
+theme/custom="res://Theme.tres"
 
 [physics]
 
@@ -32,4 +40,5 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+environment/defaults/default_clear_color=Color(0.941176, 0.941176, 0.941176, 1)
 environment/defaults/default_environment="res://default_env.tres"

@@ -5,7 +5,7 @@
 		"markerBits": 1
 	},
 	"navigation": {
-		"chunkSize": 10,
+		"chunkSize": 80,
 		"pixelSize": 200,
 		"fieldSize": 4,
 		"markerBits": 1,
@@ -62,11 +62,6 @@
 					"markerFilled": true
 				},
 				{
-					"chunkIndex": 10,
-					"markerBitVal": 1,
-					"markerFilled": false
-				},
-				{
 					"chunkIndex": 11,
 					"markerBitVal": 1,
 					"markerFilled": false
@@ -121,15 +116,22 @@
 				20,
 				290
 			]
-		},{
-			"pos": [
-				900,
-				60
-			],
-			"size": [
-				900,
-				290
-			]
 		}
-	]
+	],
+	"comment": "Other possible navigation entry: _ is used for optional params",
+	"navigation2": {
+		"borderType": "Lshape",
+		"navSize": [
+			256,
+			256
+		],
+		"chunkIndex": 0,
+		"markerBits": 0,
+		"markerBitVal": 0,
+		"markerFilled": false,
+		"fieldSize": [
+			3,
+			3
+		]
+	}
 }

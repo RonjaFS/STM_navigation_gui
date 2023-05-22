@@ -1,0 +1,20 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://bvhxyowku2mqb"]
+
+[ext_resource type="StyleBox" uid="uid://c6nutehtnve2g" path="res://pressedField.tres" id="1_ir7q2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ij3mg"]
+bg_color = Color(0.894118, 0.894118, 0.894118, 0.862745)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.207843, 0.541176, 0.662745, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[resource]
+Button/styles/hover = SubResource("StyleBoxFlat_ij3mg")
+Button/styles/normal = null
+Button/styles/pressed = ExtResource("1_ir7q2")

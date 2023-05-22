@@ -69,10 +69,6 @@ func getIndexAndMarker():
 		i+=1
 	return [number,marker]
 
-func highlight_navpatches():
-	var indexAndMarker = getIndexAndMarker()
-	mapNode.set_marked_index(indexAndMarker[1], indexAndMarker[0])
-
 func childIndexForNumber(n):
 	var line = floor(n/sizeX)
 	return line*sizeX + ((sizeX-1)-n%sizeX)
@@ -82,19 +78,10 @@ func _on_goto_button_pressed():
 	Signals.scroll_to_index.emit(indexAndMarker[0], indexAndMarker[1])
 #	mapNode.scroll_to(indexAndMarker[0], indexAndMarker[1])
 
-func _on_SaveButton_pressed():
-	MarkerStore.save_markers_to_file()
-
-func _on_LoadButton_pressed():
-	MarkerStore.load_markers_from_file()
-
-func _on_RemoveMarkerButton_pressed():
-	MarkerStore.remove_last()
-
-
 func _on_remove_highlights_button_pressed():
 	Signals.remove_navpatches_pressed.emit()
 
 
 func _on_highlight_navpatch_pressed():
-	highlight_navpatches()
+	var indexAndMarker = getIndexAndMarker()
+	Signals.highlight_navpatches_pressed.emit(indexAndMarker[0], indexAndMarker[1])
