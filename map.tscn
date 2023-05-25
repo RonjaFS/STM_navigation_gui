@@ -29,10 +29,11 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
 script = ExtResource("1")
-fieldSize = 4
 highColor = Color(0.509804, 0.776471, 0.890196, 1)
 lowColor = Color(0.27451, 0.282353, 0.321569, 1)
+highlightColor = null
 highlightId = 0
+hightlightMarker = null
 
 [node name="mapTex" type="TextureRect" parent="scrollBox/Control"]
 texture_filter = 1

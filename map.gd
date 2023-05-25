@@ -3,10 +3,6 @@ extends Control
 var nav_generator
 var NavGenerator = preload("res://navGenerator.gd")
 
-@export var fieldSize = 3
-@export var pixelSize = 200
-@export var markerBits = 1
-
 @export var highColor = Color(255,255,255) 
 @export var lowColor =  Color(100,100,100) 
 @export var highlightColor = Color(200,100,0)
@@ -17,7 +13,6 @@ var mapMarkerDict = {}
 var highlights = []
 var arrows = []
 var hash_of_file = ""
-var navigationStructure
 #var Arrow = preload("res://Arrow.tscn")
 var FlakeMarkerPacked = preload("res://MarkerMenu/FlakeMarker.tscn")
 var texture
@@ -31,7 +26,6 @@ func _ready():
 	Signals.marker_changed.connect(on_marker_changed)
 	Signals.project_changed.connect(update_pattern)
 #	Signals.add_marker_by_index.connect(add_marker_by_index)
-#	load_patternFile()
 # Dont just update the pattern if no project is set
 # TODO open last project on startup
 #	update_pattern()
@@ -45,7 +39,7 @@ func create_texture_with_pattern(obj, navGenCallbackName, forcePatternRebuild):
 	var imageT: Image = Image.create(totalSizeX, totalSizeY , false, Image.FORMAT_RGB8)
 	var xOffset = 0
 	var yOffset = 0
-	nav_generator.createNavigation(imageT, highColor, highlightColor, -1, false, fieldSize, Vector2(totalSizeX, totalSizeY), obj, navGenCallbackName, forcePatternRebuild)
+	nav_generator.createNavigation(imageT, highColor, highlightColor, -1, false, Vector2(totalSizeX, totalSizeY), obj, navGenCallbackName, forcePatternRebuild)
 
 func navGenCallback(image, done):
 	texture = ImageTexture.create_from_image(image)
@@ -62,17 +56,19 @@ func update_pattern(forcePatternRebuild = false):
 
 func zoom(factor):
 	$mapTex.scale = $mapTex.scale * factor
-
+func muToPixelSize(mu):
+	return mu * 1000 / nav_generator.pixelSize
 func on_marker_changed():
 	for m in mapMarkerDict:
 		remove_child(mapMarkerDict[m])
 	mapMarkerDict.clear()
 	for m in MarkerStore.markers.values():
-		var markerNode = MarkerStore.createNodeForMarker(m)
+		var markerNode = MarkerStore.createNodeForMarker(m, true)
 		mapMarkerDict[m.id] = markerNode
-		markerNode.position = m.pos - m.size/2
-		markerNode.visible = m.visible
 		add_child(markerNode)
+		markerNode.visible = m.visible
+		markerNode.size = muToPixelSize(m.size)
+		markerNode.position = m.pos - markerNode.size/2
 
 func highlight_index(posIndex, marker):
 	var positions = nav_generator.getPositionsForIndex(posIndex, marker).duplicate()
@@ -80,7 +76,7 @@ func highlight_index(posIndex, marker):
 		if pos == Vector2(-10, -10):
 			continue
 		#var im_texture = ImageTexture.new()
-		var im_texture = ImageTexture.create_from_image(nav_generator.getSingleNavpatchTexture(posIndex, marker, fieldSize)) #,Texture2D.FLAG_MIPMAPS
+		var im_texture = ImageTexture.create_from_image(nav_generator.getSingleNavpatchTexture(posIndex, marker, nav_generator.NAVPATCHSIZE)) #,Texture2D.FLAG_MIPMAPS
 		var texNode = TextureRect.new()
 		texNode.texture = im_texture
 		texNode.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -114,19 +110,3 @@ func save_navigation_cache(customPath = null):
 		var file = FileAccess.open(pathPosCache, FileAccess.WRITE)
 		file.store_var(nav_generator.positionCache)
 	Signals.show_notification.emit("Navigation pattern stored on disk.")
-
-#func load_projectFile():
-#	var file = FileAccess.open("/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/exampleProject.json", FileAccess.READ)
-#	var content = file.get_as_text()
-#	hash_of_file = content.hash()
-#	file.close()
-#	var json = JSON.new()
-#	var parseResultError = json.parse(content)
-#	var patternData = json.data
-#	if(parseResultError != Error.OK):
-#		printerr("json Parse error:", parseResultError)
-#	print("set field size from: ", fieldSize, " to: ", patternData.generalData.fieldSize)
-#	fieldSize = int(patternData.generalData.fieldSize)
-#	pixelSize = int(patternData.generalData.pixelSize)
-#	self.markerBits = int(patternData.generalData.markerBits)
-#	self.navigationStructure = patternData.navigation

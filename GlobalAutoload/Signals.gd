@@ -12,13 +12,15 @@ signal new_project_pressed
 signal rebuild_pattern_pressed
 signal highlight_navpatches_pressed(index, marker)
 signal remove_navpatches_pressed
-signal goto_pattern_pressed
 
 signal show_notification(notification_text, duration)
 
 signal scroll_to_index(index, marker)
+signal scroll_to_pos(pos)
 signal add_marker(position, type)
 
 signal show_path_to_convert_gds_dialog(path)
 
 signal marker_changed
+
+signal markerMoreButtonPressed(marker)

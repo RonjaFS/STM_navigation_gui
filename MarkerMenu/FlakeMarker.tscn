@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dh540gw8phh4y"]
+[gd_scene load_steps=3 format=3 uid="uid://w7lbunki11fq"]
 
 [ext_resource type="Script" path="res://MarkerMenu/FlakeMarker.gd" id="1_v3owf"]
-[ext_resource type="Texture2D" uid="uid://c7y5wel1aiqfs" path="res://flakeIcon.png" id="2_yb74k"]
+[ext_resource type="Texture2D" uid="uid://c7y5wel1aiqfs" path="res://MarkerMenu/flakeIcon.png" id="2_b1e7g"]
 
 [node name="FlakeMarker" type="Control"]
 layout_mode = 3
@@ -14,4 +14,4 @@ script = ExtResource("1_v3owf")
 modulate = Color(0.3, 0.3, 0.8, 1)
 position = Vector2(7.5, 7.5)
 scale = Vector2(0.075, 0.075)
-texture = ExtResource("2_yb74k")
+texture = ExtResource("2_b1e7g")

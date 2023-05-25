@@ -11,10 +11,8 @@ func _ready():
 		#Save Project
 		if id == 1:
 			Signals.save_project_pressed.emit()
-			Signals.show_file_dialog.emit(["*.nav"], true, func(exportPath):
-				ProjectStore.save_project_to_file(exportPath)
-				Signals.show_notification.emit("Project file saved!")
-			)
+			ProjectStore.save_project_to_file(ProjectStore.projectFilePath)
+			Signals.show_notification.emit("Project file saved!")
 #			Signals.show_notification.emit("save not yet implemented")
 		#Open Project
 		if id == 2:
@@ -27,6 +25,13 @@ func _ready():
 					globalNavImPath = globalNavImPath.replace(" ","\\ ")
 					GdsExporter.exportFile(globalNavImPath, exportFilePath, 200)
 				)
+		#Save Project As
+		if id == 4:
+			Signals.save_project_pressed.emit()
+			Signals.show_file_dialog.emit(["*.nav"], true, func(exportPath):
+				ProjectStore.save_project_to_file(exportPath)
+				Signals.show_notification.emit("Project file saved!")
+			)
 		else:
 			print("unknown id on popup menu from pattern button")
 	self.get_popup().id_pressed.connect(on_file_menu_select)
@@ -43,3 +48,6 @@ func _on_new_button_pressed():
 
 func _on_open_project_button_pressed():
 	open_project()
+
+func _on_open_last_project_pressed():
+	ProjectStore.load_last_project()

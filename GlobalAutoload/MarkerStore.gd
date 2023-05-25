@@ -3,15 +3,25 @@ extends Node
 var FlakeMarkerPacked = preload("res://MarkerMenu/FlakeMarker.tscn")
 var markers = {}
 
+enum MarkerType {
+	Flake = 0,
+	PositionPin = 1
+}
+func getTextureForMarkerType(t):
+	match t:
+		MarkerType.PositionPin: return load("res://MarkerMenu/pin.png")
+		MarkerType.Flake: return load("res://MarkerMenu/flakeIcon.png")
+
 func _ready():
 	print(markers)
 	add_user_signal("markers_updated")
 	Signals.add_marker.connect(add_marker)
 
-func createNodeForMarker(marker):
+func createNodeForMarker(marker, onMap = false):
 	var markerNode = FlakeMarkerPacked.instantiate()
 	markerNode.type = marker.type
 	markerNode.color = marker.color
+	markerNode.onMap = onMap
 	return markerNode
 
 func update_marker(marker):
@@ -34,7 +44,7 @@ func add_marker(pos, type):
 		"id":id,
 		"label": create_label(),
 		"pos": pos,
-		"size": Vector2(7,7),
+		"size": Vector2(15,15),
 		"type": type,
 		"description": "",
 		"visible": true,

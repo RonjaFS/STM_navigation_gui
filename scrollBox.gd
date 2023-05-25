@@ -12,6 +12,7 @@ func _ready():
 	vbar.connect("value_changed",Callable(self,"_on_vbar"))
 	hbar.connect("value_changed",Callable(self,"_on_hbar"))
 	Signals.scroll_to_index.connect(scroll_to_index)
+	Signals.scroll_to_pos.connect(scroll_to_pos)
 
 func _input(event):
 	if event is InputEventMouseButton:
@@ -28,7 +29,7 @@ func _input(event):
 				scale_at_pivot(zoom_pos, zoom_factor)
 
 			if event.button_index == MOUSE_BUTTON_RIGHT:
-				Signals.add_marker.emit(child.get_local_mouse_position(), 0)
+				Signals.add_marker.emit(child.get_local_mouse_position(), 1)
 #				child.add_marker(child.get_local_mouse_position(), 0)
 				# DRAG
 	if event is InputEventMouseMotion:
@@ -51,10 +52,7 @@ func _on_vbar(new_val):
 func _on_hbar(new_val):
 	child.position.x = new_val
 
-func scroll_to_index(index, marker):
-	var pos = child.nav_generator.getPositionsForIndex(index, marker)[0]
-	if pos == Vector2(-10,-10):
-		return
+func scroll_to_pos(pos):
 	var scale = child.scale
 	if(child.scale.x < GOTO_ZOOM):
 		scale = Vector2(GOTO_ZOOM, GOTO_ZOOM)
@@ -65,6 +63,13 @@ func scroll_to_index(index, marker):
 	tween = get_tree().create_tween()
 	tween.tween_property(child, "scale", scale, duration)
 	tween.parallel().tween_property(child, "position", newPos, duration)
+
+func scroll_to_index(index, marker):
+	var pos = child.nav_generator.getPositionsForIndex(index, marker)[0]
+	if pos == Vector2(-10,-10):
+		return
+	scroll_to_pos(pos)
+
 
 func _on_in_Button_pressed():
 	scale_at_pivot(self.size/2, 1.1)

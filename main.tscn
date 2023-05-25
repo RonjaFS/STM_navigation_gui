@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://6k432p8u3hdn"]
+[gd_scene load_steps=14 format=3 uid="uid://6k432p8u3hdn"]
 
 [ext_resource type="PackedScene" uid="uid://ckq7v28movqv0" path="res://Field.tscn" id="1"]
 [ext_resource type="Script" path="res://TinyScripts/PatternOptionButton.gd" id="1_3f8qg"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://TinyScripts/ChoosePatternFileButton.gd" id="5_0v3xp"]
 [ext_resource type="Script" path="res://TinyScripts/OpenButton.gd" id="5_2thkx"]
 [ext_resource type="PackedScene" uid="uid://rh3gcja5rpnr" path="res://NotificationPanel/notificationPanel.tscn" id="5_d55q7"]
+[ext_resource type="Script" path="res://TinyScripts/OpenLastProjectButton.gd" id="5_fr1so"]
 [ext_resource type="Script" path="res://TinyScripts/FileDialog.gd" id="6_ff6j8"]
 [ext_resource type="Script" path="res://TinyScripts/AcceptDialog.gd" id="7_fs15r"]
 
@@ -49,7 +50,7 @@ theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 text = "File"
-item_count = 4
+item_count = 5
 popup/item_0/text = "Export Image"
 popup/item_0/id = 0
 popup/item_1/text = "Save Project"
@@ -58,6 +59,8 @@ popup/item_2/text = "Open Project"
 popup/item_2/id = 2
 popup/item_3/text = "Export GdsII"
 popup/item_3/id = 3
+popup/item_4/text = "Save Project As"
+popup/item_4/id = 4
 script = ExtResource("1_e261l")
 
 [node name="PatternOptionButton" type="MenuButton" parent="VBoxContainer/ColorRect/HBoxContainer2"]
@@ -103,6 +106,11 @@ script = ExtResource("4_uyuwv")
 layout_mode = 2
 text = "Open Project"
 script = ExtResource("5_2thkx")
+
+[node name="OpenLastProject" type="Button" parent="VBoxContainer/ColorRect/HBoxContainer2"]
+layout_mode = 2
+text = "Open Last Project"
+script = ExtResource("5_fr1so")
 
 [node name="ChoosePatternButton" type="Button" parent="VBoxContainer/ColorRect/HBoxContainer2"]
 layout_mode = 2
@@ -172,6 +180,7 @@ text = "Copy!"
 [connection signal="text_submitted" from="VBoxContainer/ColorRect/HBoxContainer2/HBoxContainer/ProjectName" to="VBoxContainer/ColorRect/HBoxContainer2/HBoxContainer/ProjectName" method="_on_text_submitted"]
 [connection signal="pressed" from="VBoxContainer/ColorRect/HBoxContainer2/NewButton" to="VBoxContainer/ColorRect/HBoxContainer2/FileOptionButton" method="_on_new_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/ColorRect/HBoxContainer2/OpenProjectButton" to="VBoxContainer/ColorRect/HBoxContainer2/FileOptionButton" method="_on_open_project_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/ColorRect/HBoxContainer2/OpenLastProject" to="VBoxContainer/ColorRect/HBoxContainer2/FileOptionButton" method="_on_open_last_project_pressed"]
 [connection signal="pressed" from="VBoxContainer/ColorRect/HBoxContainer2/ChoosePatternButton" to="VBoxContainer/ColorRect/HBoxContainer2/PatternOptionButton" method="_on_choose_pattern_button_pressed"]
 [connection signal="file_selected" from="FileDialog" to="FileDialog" method="_on_file_selected"]
 [connection signal="close_requested" from="CopyCommandDialog" to="CopyCommandDialog" method="_on_close_requested"]

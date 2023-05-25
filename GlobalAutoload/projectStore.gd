@@ -2,8 +2,16 @@ extends Node
 
 var patternFilePath = null
 var projectName = null
+var projectFilePath = null
+
+var lastProjectPath = null
+var PATH_TO_LAST_PROJECT = "user://LastProjectPath.var"
+
 func _ready():
 	Signals.new_project_pressed.connect(new_project)
+	var f = FileAccess.open(PATH_TO_LAST_PROJECT, FileAccess.READ)
+	if f:
+		lastProjectPath = f.get_var()
 
 func new_project():
 	projectName = "New Project"
@@ -29,6 +37,7 @@ func load_project_from_file(customPath = ""):
 	var path = "user://last_project_save.dat"
 	if customPath != "":
 		path = customPath
+	self.projectFilePath = path
 	var file = FileAccess.open(path, FileAccess.READ)
 	var project = file.get_var()
 	MarkerStore.markers = project.markers
@@ -46,3 +55,14 @@ func set_project_name(name):
 func set_pattern_file(path):
 	self.patternFilePath = path
 	Signals.project_changed.emit()
+
+func has_last_project():
+	return lastProjectPath != null
+	
+func load_last_project():
+	if has_last_project():
+		load_project_from_file(lastProjectPath)
+	else:
+		Signals.show_notification.emit("Cannot load last project")
+func _exit_tree():
+	FileAccess.open(PATH_TO_LAST_PROJECT, FileAccess.WRITE).store_var(projectFilePath)

@@ -2,6 +2,8 @@ extends HBoxContainer
 var marker
 func set_marker(m):
 	marker = m
+	for c in $IconContainer.get_children():
+		$IconContainer.remove_child(c)
 	var markerNode = MarkerStore.createNodeForMarker(marker)
 #	while $TextureRect.get_child_count() > 0:
 #		$TextureRect.remove_child(get_child(0))
@@ -39,3 +41,11 @@ func _on_label_text_changed(new_text):
 func _on_label_focus_exited():
 	marker.label = $Label.text
 	MarkerStore.update_marker(marker)
+
+
+func _on_button_pressed():
+	Signals.markerMoreButtonPressed.emit(marker)
+
+
+func _on_go_to_button_pressed():
+	Signals.scroll_to_pos.emit(marker.pos)

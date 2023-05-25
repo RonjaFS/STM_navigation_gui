@@ -12,6 +12,8 @@ var highlightId
 var highlightMarker
 var imageSize
 var navFileData
+var pixelSize
+var fieldSize
 
 var navigationStructure
 var hash_of_file
@@ -220,13 +222,12 @@ func navigationChunkPixelSize():
 	var navpatchDistance = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
 	return max_NavpatchChunkWidth * navpatchDistance
  
-func createNavigation(pimage, phighColor, phighlightColor, phighlightId, phighlightMarker, patternSize, maxSize, obj, callback, forcePatternRebuild):
+func createNavigation(pimage, phighColor, phighlightColor, phighlightId, phighlightMarker, maxSize, obj, callback, forcePatternRebuild):
 	highColor = phighColor
 	highlightColor = phighlightColor
 	highlightId = phighlightId
 	highlightMarker = phighlightMarker
 	image = pimage
-	NAVPATCHSIZE = patternSize
 	imageSize = maxSize
 	
 	print(DirAccess.get_files_at("user://"))
@@ -366,8 +367,8 @@ func load_patternFile():
 	if(parseResultError != Error.OK):
 		printerr("json Parse error:", parseResultError)
 	print("set field size from: ", self.navFileData.generalData.fieldSize, " to: ", self.navFileData.generalData.fieldSize)
-#	fieldSize = int(self.navFileData.generalData.fieldSize)
-#	pixelSize = int(self.navFileData.generalData.pixelSize)
+	fieldSize = int(self.navFileData.generalData.fieldSize)
+	pixelSize = int(self.navFileData.generalData.pixelSize)
 	markerBits = int(self.navFileData.generalData.markerBits)
 	navigationStructure = self.navFileData.navigation
 	self.NAVPATCHSIZE = self.navFileData.generalData.fieldSize

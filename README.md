@@ -32,3 +32,8 @@ BOXSTYLE = "Lshape2" # "Lshape", "box", "grid", "Lshape"
 ```
 
 This script can be used in Klayout (using the code editor behind the F5 shortcut) to generate a gds file that can be imported most of the electron beam lithography systems.
+
+
+### Icons
+<a href="https://www.flaticon.com/free-icons/location" title="location icons">Location icons created by kmg design - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/delete" title="delete icons">Delete icons created by Kiranshastry - Flaticon</a>
