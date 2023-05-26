@@ -1,9 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://bn617ejbcowii"]
+[gd_scene load_steps=10 format=3 uid="uid://bn617ejbcowii"]
 
 [ext_resource type="Script" path="res://map.gd" id="1"]
 [ext_resource type="Script" path="res://scrollBox.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://dl5xyorhwbkc5" path="res://icon.png" id="3_ifnh3"]
+[ext_resource type="Script" path="res://CheckBox.gd" id="4_g738p"]
 
 [sub_resource type="ImageTexture" id="2"]
+
+[sub_resource type="Curve" id="Curve_sl56d"]
 
 [sub_resource type="Gradient" id="Gradient_wejyf"]
 colors = PackedColorArray(0, 0.903329, 0.877665, 1, 1, 1, 1, 1)
@@ -18,6 +22,9 @@ border_color = Color(0.152941, 0.152941, 0.152941, 1)
 corner_radius_top_left = 30
 shadow_size = 10
 shadow_offset = Vector2(10, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3gsll"]
+bg_color = Color(1, 0.215686, 0.705882, 1)
 
 [node name="map" type="VBoxContainer"]
 anchors_preset = 15
@@ -58,15 +65,28 @@ texture = SubResource("2")
 visible = false
 z_index = 1
 width = 5.0
+width_curve = SubResource("Curve_sl56d")
 gradient = SubResource("Gradient_wejyf")
 joint_mode = 2
 antialiased = true
 
 [node name="Panel" type="Panel" parent="scrollBox/Control"]
+visible = false
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_l0b68")
+
+[node name="CheckBox" type="CheckBox" parent="scrollBox/Control/Panel"]
+visible = false
+layout_mode = 0
+offset_right = 262.0
+offset_bottom = 210.0
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3gsll")
+text = "jjjjj"
+icon = ExtResource("3_ifnh3")
+alignment = 2
+script = ExtResource("4_g738p")
 
 [node name="VScrollBar" type="VScrollBar" parent="scrollBox"]
 layout_mode = 0
@@ -91,6 +111,7 @@ layout_mode = 2
 [node name="Button" type="Button" parent="HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 9.58
 text = "+"
 
 [node name="Button2" type="Button" parent="HBoxContainer"]
@@ -98,5 +119,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "-"
 
+[connection signal="pressed" from="scrollBox/Control/Panel/CheckBox" to="scrollBox/Control/Panel/CheckBox" method="_on_pressed"]
 [connection signal="pressed" from="HBoxContainer/Button" to="scrollBox" method="_on_in_Button_pressed"]
 [connection signal="pressed" from="HBoxContainer/Button2" to="scrollBox" method="_on_out_Button_pressed"]

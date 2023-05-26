@@ -6,7 +6,7 @@ import math
 import sys
 # Default params
 PIXEL_SIZE = 200
-BASE_PATH = "/home/user/Documents/patternFiles/"
+BASE_PATH = "C:/Users/Ronja/Documents/ElectronBeamLithographyFiles/"
 FILE_NAME = "patternImage"
 IMAGE_PATH = BASE_PATH+FILE_NAME+".png"
 OUT_PATH = BASE_PATH+FILE_NAME+".gds"

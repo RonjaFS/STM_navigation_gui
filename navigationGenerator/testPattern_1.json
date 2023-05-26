@@ -1,0 +1,78 @@
+{
+	"generalData": {
+		"pixelSize": 200,
+		"fieldSize": 4,
+		"markerBits": 0
+	},
+	"navigation": {
+		"chunkSize": 150,
+		"pixelSize": 200,
+		"fieldSize": 4,
+		"markerBits": 1,
+		"borderType": "Lshape",
+		"chunks": [
+			[
+				{
+					"chunkIndex": 5,
+					"markerBitVal": 1,
+					"markerFilled": true
+				},
+				{
+					"chunkIndex": 1,
+					"markerBitVal": 1,
+					"markerFilled": false
+				}
+			],
+            [
+				{
+					"chunkIndex": 5,
+					"markerBitVal": 2,
+					"markerFilled": false
+				},
+				{
+					"chunkIndex": 1,
+					"markerBitVal": 1,
+					"markerFilled": true
+				}
+			]
+		]
+	},
+	"noPatternAreas": [
+		{
+			"pos": [
+				10,
+				10
+			],
+			"size": [
+				50,
+				80
+			]
+		},
+		{
+			"pos": [
+				200,
+				0
+			],
+			"size": [
+				20,
+				290
+			]
+		}
+	],
+	"comment": "Other possible navigation entry: _ is used for optional params",
+	"navigation2": {
+		"borderType": "Lshape",
+		"navSize": [
+			256,
+			256
+		],
+		"chunkIndex": 0,
+		"markerBits": 0,
+		"markerBitVal": 0,
+		"markerFilled": false,
+		"fieldSize": [
+			3,
+			3
+		]
+	}
+}

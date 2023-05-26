@@ -355,7 +355,7 @@ func get_totalSize():
 # Thread must be disposed (or "joined"), for portability.
 
 func load_patternFile():
-	var path = "/home/timo/Documents/Uni/9.Masterarbeit_Semester/NavigationHelper/navigationGenerator/examplePatternFile.json"
+	var path = "C:/Users/Ronja/Documents/GitHub/STM_navigation_gui/navigationGenerator/examplePatternFile.json"
 	if ProjectStore.patternFilePath != null:
 		path = ProjectStore.patternFilePath 
 	var file = FileAccess.open(path, FileAccess.READ)
