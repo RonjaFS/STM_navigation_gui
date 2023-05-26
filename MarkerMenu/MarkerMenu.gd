@@ -10,8 +10,8 @@ func _process(delta):
 	pass
 
 
-func _on_remove_marker_button_pressed():
-	MarkerStore.remove_last()
+#func _on_remove_marker_button_pressed():
+#	MarkerStore.remove_last()
 
 
 func _on_load_button_pressed():

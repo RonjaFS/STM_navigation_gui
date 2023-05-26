@@ -119,7 +119,7 @@ func addNavpatch(x, y, id, isChunkMarker, offsetX, offsetY, img):
 		if c == '1':
 			var idOffsetMarker = i + 1
 			var borderOffset = 1
-			var xCoordInPatch = idOffsetMarker % NAVPATCHSIZE
+			var xCoordInPatch = int(idOffsetMarker) % NAVPATCHSIZE
 			var yCoordInPatch = floor(idOffsetMarker / NAVPATCHSIZE)
 			var pixelX = borderOffset + x + xCoordInPatch
 			var pixelY = borderOffset + y + yCoordInPatch
@@ -180,41 +180,41 @@ func createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX=-1, cutof
 				addNavpatch(i * navpatchDistance, j * navpatchDistance, navPatchId, false, x, y, img)
 
 
-func createNavigationChunk(x, y, id, obj, callback, cutoffX=-1, cutoffY=-1, im=null):
-	var img
-	if(im == null):
-		img = image
-	else:
-		img = im
-	var numberOfIndicators = pow(2, navpatchDigitCount())
-	var max_NavpatchChunkWidth = floor(sqrt(numberOfIndicators + 1))
-	var maxX = max_NavpatchChunkWidth if cutoffX == -1 else cutoffX
-	var maxY = max_NavpatchChunkWidth if cutoffY == -1 else cutoffY
-	var navpatchDistance = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
-
-	if BOXSTYLE == "grid":
-		for i in range(maxX):
-			addRectLinePixelCoord(i*navpatchDistance, 0, i*navpatchDistance, maxY*navpatchDistance, x, y,highColor, img)
-			print("grid vertical: ", i, " of ", maxX)
-		for j in range(maxY):
-			addRectLinePixelCoord(0, j*navpatchDistance, maxX*navpatchDistance, j*navpatchDistance, x, y,highColor, img)
-			print("grid horizontal: ", j, " of ", maxX)
-	print('after grid creating before navpatch')
-	for j in range(maxY):
-#		print('chunk Progress ',i/maxX * 100,'% (',i,'/', maxX,")")
-		#false # img.unlock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
-		if( Time.get_ticks_msec() - textureUpdateTime > 300 ):
-			print("time refresh stuff:", Time.get_ticks_msec(), ", ",textureUpdateTime)
-			textureUpdateTime = Time.get_ticks_msec()
-			obj.call_deferred(callback, img)
-		#false # img.lock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
-		for i in range(maxX):
-			if (j == 0 and i == 0):
-				addNavpatch(0, 0, id, true, x, y, img)
-			else:
-				var navPatchId =  j * max_NavpatchChunkWidth + i - 1;
-#				print("add navpatch with ID: ", navPatchId)
-				addNavpatch(i * navpatchDistance, j * navpatchDistance, navPatchId, false, x, y, img)
+#func createNavigationChunk(x, y, id, obj, callback, cutoffX=-1, cutoffY=-1, im=null):
+#	var img
+#	if(im == null):
+#		img = image
+#	else:
+#		img = im
+#	var numberOfIndicators = pow(2, navpatchDigitCount())
+#	var max_NavpatchChunkWidth = floor(sqrt(numberOfIndicators + 1))
+#	var maxX = max_NavpatchChunkWidth if cutoffX == -1 else cutoffX
+#	var maxY = max_NavpatchChunkWidth if cutoffY == -1 else cutoffY
+#	var navpatchDistance = NAVPATCHSIZE + 2 + GAP_NAVPATCHES
+#
+#	if BOXSTYLE == "grid":
+#		for i in range(maxX):
+#			addRectLinePixelCoord(i*navpatchDistance, 0, i*navpatchDistance, maxY*navpatchDistance, x, y,highColor, img)
+#			print("grid vertical: ", i, " of ", maxX)
+#		for j in range(maxY):
+#			addRectLinePixelCoord(0, j*navpatchDistance, maxX*navpatchDistance, j*navpatchDistance, x, y,highColor, img)
+#			print("grid horizontal: ", j, " of ", maxX)
+#	print('after grid creating before navpatch')
+#	for j in range(maxY):
+##		print('chunk Progress ',i/maxX * 100,'% (',i,'/', maxX,")")
+#		#false # img.unlock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
+#		if( Time.get_ticks_msec() - textureUpdateTime > 300 ):
+#			print("time refresh stuff:", Time.get_ticks_msec(), ", ",textureUpdateTime)
+#			textureUpdateTime = Time.get_ticks_msec()
+#			obj.call_deferred(callback, img)
+#		#false # img.lock() # TODOConverter40, Image no longer requires locking, `false` helps to not break one line if/else, so it can freely be removed
+#		for i in range(maxX):
+#			if (j == 0 and i == 0):
+#				addNavpatch(0, 0, id, true, x, y, img)
+#			else:
+#				var navPatchId =  j * max_NavpatchChunkWidth + i - 1;
+##				print("add navpatch with ID: ", navPatchId)
+#				addNavpatch(i * navpatchDistance, j * navpatchDistance, navPatchId, false, x, y, img)
 
 func navigationChunkPixelSize():
 	var numberOfIndicators = pow(2, navpatchDigitCount())
@@ -323,9 +323,9 @@ func _thread_createNavitation_file(params):
 func getSingleNavpatchTexture(pId, pMarker, patternSize):
 	highlightId = pId
 	highlightMarker = pMarker
-	NAVPATCHSIZE = patternSize
+	NAVPATCHSIZE = int(patternSize)
 	imageSize = Vector2(patternSize+3,patternSize+3)
-	var img = Image.create(imageSize.x, imageSize.y, false, Image.FORMAT_RGB8)
+	var img = Image.create(imageSize.x, imageSize.y, false, Image.FORMAT_RGBA8)
 	addNavpatch(0, 0, pId, pMarker,2,2, img)
 	return img
 
@@ -338,7 +338,8 @@ func getPositionsForIndex(id, marker):
 		var chunkMarkerExtra = pow(2, NAVPATCHSIZE*NAVPATCHSIZE - 1)
 		posCacheId += chunkMarkerExtra
 	if positionCache.has(posCacheId):
-		return positionCache[posCacheId]
+		var posis = positionCache[posCacheId]
+		return posis
 	else:
 		printerr("The index: "+str(posCacheId)+" is not part of the showed pattern")
 		return [Vector2(-10, -10)]
@@ -371,7 +372,7 @@ func load_patternFile():
 	pixelSize = int(self.navFileData.generalData.pixelSize)
 	markerBits = int(self.navFileData.generalData.markerBits)
 	navigationStructure = self.navFileData.navigation
-	self.NAVPATCHSIZE = self.navFileData.generalData.fieldSize
+	self.NAVPATCHSIZE = int(self.navFileData.generalData.fieldSize)
 	#self.navFileData.noPatternAreas
 
 func _exit_tree():

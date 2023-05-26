@@ -40,5 +40,6 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+renderer/rendering_method="mobile"
 environment/defaults/default_clear_color=Color(0.941176, 0.941176, 0.941176, 1)
 environment/defaults/default_environment="res://default_env.tres"

@@ -15,5 +15,5 @@ func update_list():
 	var i = 0
 	for mKey in MarkerStore.markers:
 		var m = MarkerStore.markers[mKey]
-		get_child(i).set_marker(m)
+		get_child(i).get_node("HBoxContainer").set_marker(m)
 		i += 1

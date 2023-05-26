@@ -17,8 +17,10 @@ func _ready():
 func update_type(new):
 	type = new
 	$FlakeIcon.texture = MarkerStore.getTextureForMarkerType(type)
+
 func update_onMap(new):
 	onMap = new
+	update_color(color)
 	on_resize()
 func on_resize():
 	var minSize = min(get_rect().size.x, get_rect().size.y)
@@ -31,5 +33,7 @@ func on_resize():
 func update_color(new):
 	color = new
 	$FlakeIcon.modulate = color
-
+	if(onMap):
+		color.a = 0.8
+		$FlakeIcon.modulate = color
 

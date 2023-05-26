@@ -25,6 +25,8 @@ func _ready():
 	Signals.highlight_navpatches_pressed.connect(highlight_index)
 	Signals.marker_changed.connect(on_marker_changed)
 	Signals.project_changed.connect(update_pattern)
+	Signals.marker_changed.connect(draw_selected_target_arrow)
+	Signals.marker_changed.connect(drawBox)
 #	Signals.add_marker_by_index.connect(add_marker_by_index)
 # Dont just update the pattern if no project is set
 # TODO open last project on startup
@@ -36,7 +38,8 @@ func create_texture_with_pattern(obj, navGenCallbackName, forcePatternRebuild):
 	var totalSize = nav_generator.get_totalSize()
 	var totalSizeX = totalSize[0]
 	var totalSizeY = totalSize[1]
-	var imageT: Image = Image.create(totalSizeX, totalSizeY , false, Image.FORMAT_RGB8)
+	var imageT: Image = Image.create(totalSizeX, totalSizeY , false, Image.FORMAT_RGBA8)
+#	imageT.fill(Color(0,0,0,0))
 	var xOffset = 0
 	var yOffset = 0
 	nav_generator.createNavigation(imageT, highColor, highlightColor, -1, false, Vector2(totalSizeX, totalSizeY), obj, navGenCallbackName, forcePatternRebuild)
@@ -110,3 +113,24 @@ func save_navigation_cache(customPath = null):
 		var file = FileAccess.open(pathPosCache, FileAccess.WRITE)
 		file.store_var(nav_generator.positionCache)
 	Signals.show_notification.emit("Navigation pattern stored on disk.")
+	var l = $Line2D
+	var ms = MarkerStore.get_selected_marker()
+	var mt = MarkerStore.get_target_marker()
+	if(ms and mt):
+		l.visible = true
+		l.points = [ms.pos, mt.pos]
+
+
+func draw_selected_target_arrow():
+	var l = $Line2D
+	var ms = MarkerStore.get_selected_marker()
+	var mt = MarkerStore.get_target_marker()
+	if(ms  and mt ):
+		l.visible = true
+		l.points = [ms.pos, mt.pos]
+	else:
+		l.visible = false
+func drawBox():
+#	pos = nav_generator.get_position_for_index(nav_generator.hieghtightid)
+	$Panel.position = Vector2(100,100)
+	$Panel.size = Vector2(100,1000)

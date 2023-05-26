@@ -4,7 +4,6 @@ import klayout.db as db
 from PIL import Image
 import math
 import sys
-
 # Default params
 PIXEL_SIZE = 200
 BASE_PATH = "/home/user/Documents/patternFiles/"
@@ -14,6 +13,11 @@ OUT_PATH = BASE_PATH+FILE_NAME+".gds"
 
 # usage: python imageToGds.py path/to/image.png path/to/output.gds <PixelSize>
 
+def isColorForGdsShape(d):
+    if len(d) == 3:
+        return d != (0,0,0)
+    if len(d) == 4:
+        return (d[3] > 10)
 
 def printPercent(p):
     print(str(int(p*100))+"%")
@@ -56,7 +60,8 @@ for d in data:
     pos = (index % im.width, math.floor(index/im.width))
     if (pos[0] == 0 and pos[1] % 30 == 0):
         printPercent(pos[1]/im.height)
-    if d != (0, 0, 0):
+
+    if isColorForGdsShape(d):
         top_cell.shapes(layer1).insert(pixelRect.moved(
             pos[0]*PIXEL_SIZE, size[1] - pos[1]*PIXEL_SIZE))
     index += 1

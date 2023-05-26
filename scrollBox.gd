@@ -29,7 +29,7 @@ func _input(event):
 				scale_at_pivot(zoom_pos, zoom_factor)
 
 			if event.button_index == MOUSE_BUTTON_RIGHT:
-				Signals.add_marker.emit(child.get_local_mouse_position(), 1)
+				Signals.add_marker.emit(child.get_local_mouse_position(), 2)
 #				child.add_marker(child.get_local_mouse_position(), 0)
 				# DRAG
 	if event is InputEventMouseMotion:

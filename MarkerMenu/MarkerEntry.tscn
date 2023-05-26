@@ -5,45 +5,63 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1nr5w"]
 
-[node name="MarkerEntry" type="HBoxContainer"]
-offset_right = 320.0
+[node name="MarkerEntry" type="ColorRect"]
+custom_minimum_size = Vector2(0, 40)
+offset_right = 468.0
 offset_bottom = 33.0
 size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_3p416")
 
-[node name="IconContainer" type="PanelContainer" parent="."]
+[node name="IconContainer" type="PanelContainer" parent="HBoxContainer"]
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_1nr5w")
 
-[node name="Label" type="LineEdit" parent="."]
+[node name="Label" type="LineEdit" parent="HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Marker Name"
+caret_blink = true
+caret_blink_interval = 0.5
 
-[node name="VisibleBox" type="CheckBox" parent="."]
+[node name="VisibleBox" type="CheckBox" parent="HBoxContainer"]
 layout_mode = 2
+text = "Visible"
 flat = true
 
-[node name="Button" type="Button" parent="."]
+[node name="TargetButtton" type="CheckBox" parent="HBoxContainer"]
+layout_mode = 2
+text = "Target"
+flat = true
+
+[node name="Button" type="Button" parent="HBoxContainer"]
 layout_mode = 2
 text = "More..."
 
-[node name="DeleteButton" type="Button" parent="."]
+[node name="DeleteButton" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 icon = ExtResource("2_hfdek")
 icon_alignment = 1
 expand_icon = true
 
-[node name="GoToButton" type="Button" parent="."]
+[node name="GoToButton" type="Button" parent="HBoxContainer"]
 layout_mode = 2
 text = "↓"
 
-[connection signal="focus_exited" from="Label" to="." method="_on_label_focus_exited"]
-[connection signal="text_changed" from="Label" to="." method="_on_label_text_changed"]
-[connection signal="text_submitted" from="Label" to="." method="_on_label_text_submitted"]
-[connection signal="pressed" from="VisibleBox" to="." method="_on_visible_box_pressed"]
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]
-[connection signal="pressed" from="GoToButton" to="." method="_on_go_to_button_pressed"]
+[connection signal="focus_exited" from="HBoxContainer/Label" to="." method="_on_label_focus_exited"]
+[connection signal="text_changed" from="HBoxContainer/Label" to="HBoxContainer" method="_on_label_text_changed"]
+[connection signal="text_submitted" from="HBoxContainer/Label" to="HBoxContainer" method="_on_label_text_submitted"]
+[connection signal="pressed" from="HBoxContainer/VisibleBox" to="HBoxContainer" method="_on_visible_box_pressed"]
+[connection signal="pressed" from="HBoxContainer/TargetButtton" to="HBoxContainer" method="_on_target_buttton_pressed"]
+[connection signal="pressed" from="HBoxContainer/Button" to="HBoxContainer" method="_on_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/DeleteButton" to="HBoxContainer" method="_on_delete_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/GoToButton" to="HBoxContainer" method="_on_go_to_button_pressed"]

@@ -22,6 +22,8 @@ func save_project_to_file(customPath = ""):
 	var project = {
 		"patternFile": patternFilePath,
 		"markers": MarkerStore.markers,
+		"selected_marker": MarkerStore._selected_marker_id,
+		"target_marker": MarkerStore._target_marker_id,
 		"projectName": projectName
 	}
 	if customPath != "":
@@ -40,10 +42,12 @@ func load_project_from_file(customPath = ""):
 	self.projectFilePath = path
 	var file = FileAccess.open(path, FileAccess.READ)
 	var project = file.get_var()
+	file.close()
 	MarkerStore.markers = project.markers
 	self.patternFilePath = project.patternFile
 	self.projectName = project.projectName
-	file.close()
+	MarkerStore._selected_marker_id = project.selected_marker
+	MarkerStore._target_marker_id = project.target_marker
 	Signals.project_changed.emit()
 	Signals.marker_changed.emit()
 	Signals.show_notification.emit("Project loaded from file")
