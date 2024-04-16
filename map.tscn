@@ -8,6 +8,8 @@
 [sub_resource type="ImageTexture" id="2"]
 
 [sub_resource type="Curve" id="Curve_sl56d"]
+_data = [Vector2(0.0139165, 0.281818), 0.0, 0.0, 0, 0, Vector2(0.526839, 0.818182), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
 
 [sub_resource type="Gradient" id="Gradient_wejyf"]
 colors = PackedColorArray(0, 0.903329, 0.877665, 1, 1, 1, 1, 1)
@@ -62,7 +64,6 @@ mouse_default_cursor_shape = 3
 texture = SubResource("2")
 
 [node name="Line2D" type="Line2D" parent="scrollBox/Control"]
-visible = false
 z_index = 1
 width = 5.0
 width_curve = SubResource("Curve_sl56d")

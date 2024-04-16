@@ -1,3 +1,4 @@
+
 #!/usr/bin/python
 
 import klayout.db as db
@@ -6,10 +7,13 @@ import math
 import sys
 # Default params
 PIXEL_SIZE = 200
-BASE_PATH = "C:/Users/Ronja/Documents/ElectronBeamLithographyFiles/"
-FILE_NAME = "patternImage"
-IMAGE_PATH = BASE_PATH+FILE_NAME+".png"
-OUT_PATH = BASE_PATH+FILE_NAME+".gds"
+BASE_PATH = "..\.." 
+#"C:\Users\Ronja\AppData\Roaming\Godot\app_userdata\Navigation_Helper\"
+FILE_NAME = "\navigation_4072000127"
+IMAGE_PATH = BASE_PATH + FILE_NAME+".png"
+print(IMAGE_PATH)
+OUT_PATH = "C:/Users/Ronja/Documents/ElectronBeamLithographyFiles/FieldPatterns"+FILE_NAME+".gds"
+#OUT_PATH = "C:\Users\Ronja\Documents\ElectronBeamLithographyFiles\FieldPatterns"+FILE_NAME+".gds"
 
 # usage: python imageToGds.py path/to/image.png path/to/output.gds <PixelSize>
 
