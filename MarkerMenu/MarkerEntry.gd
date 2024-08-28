@@ -43,7 +43,7 @@ func _on_label_text_submitted(new_text):
 	MarkerStore.update_marker(marker)
 
 
-func _on_label_text_changed(new_text):
+func _on_label_text_changed(_new_text):
 	pass
 
 

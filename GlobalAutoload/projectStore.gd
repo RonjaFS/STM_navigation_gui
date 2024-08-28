@@ -52,8 +52,8 @@ func load_project_from_file(customPath = ""):
 	Signals.marker_changed.emit()
 	Signals.show_notification.emit("Project loaded from file")
 
-func set_project_name(name):
-	self.projectName = name
+func set_project_name(current_name):
+	self.projectName = current_name
 	Signals.project_changed.emit()
 
 func set_pattern_file(path):

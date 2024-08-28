@@ -25,6 +25,6 @@ func _on_focus_exited():
 	Signals.show_notification.emit("Project name changed")
 
 
-func _on_text_submitted(new_text):
+func _on_text_submitted(_new_text):
 	ProjectStore.set_project_name(self.text)
 	Signals.show_notification.emit("Project name changed")

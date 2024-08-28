@@ -1,5 +1,7 @@
 extends VBoxContainer
 
+@warning_ignore("integer_division")
+
 var muProStepX = 0.2
 var muProStepY = 0.2
 # Called when the node enters the scene tree for the first time.
@@ -12,8 +14,8 @@ func update_labels():
 	if(ms and mt):
 		var xDiff = mt.pos.x - ms.pos.x
 		var yDiff = -(mt.pos.y - ms.pos.y)
-		$Xnav.text = "Navigation X "+ str(int(xDiff*100)/100) +"mu ("+str(int(xDiff/muProStepX))+" steps)"
-		$Ynav.text = "Navigation Y "+ str(int(yDiff*100)/100) +"mu ("+str(int(yDiff/muProStepY))+" steps)"
+		$Xnav.text = "Navigation X "+ str(int(xDiff*100)/100) +"mu ("+str(int(xDiff/muProStepX))+" steps)" 
+		$Ynav.text = "Navigation Y "+ str(int(yDiff*100)/100) +"mu ("+str(int(yDiff/muProStepY))+" steps)" 
 	else:
 		$Xnav.text = "select current and target node"
 		$Ynav.text = ""

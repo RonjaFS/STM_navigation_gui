@@ -40,8 +40,8 @@ func create_texture_with_pattern(obj, navGenCallbackName, forcePatternRebuild):
 	var totalSizeY = totalSize[1]
 	var imageT: Image = Image.create(totalSizeX, totalSizeY , false, Image.FORMAT_RGBA8)
 #	imageT.fill(Color(0,0,0,0))
-	var xOffset = 0
-	var yOffset = 0
+	var _xOffset = 0
+	var _yOffset = 0
 	nav_generator.createNavigation(imageT, highColor, highlightColor, -1, false, Vector2(totalSizeX, totalSizeY), obj, navGenCallbackName, forcePatternRebuild)
 
 func navGenCallback(image, done):

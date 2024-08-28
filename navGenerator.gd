@@ -149,7 +149,7 @@ func createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX=-1, cutof
 		img = image
 	else:
 		img = im
-	var numberOfIndicators = pow(2, navpatchDigitCount())
+	var _numberOfIndicators = pow(2, navpatchDigitCount())
 	var max_NavpatchChunkWidth = navFileData.navigation.chunkSize#floor(sqrt(numberOfIndicators + 1))
 	var maxX = max_NavpatchChunkWidth if cutoffX == -1 else cutoffX
 	var maxY = max_NavpatchChunkWidth if cutoffY == -1 else cutoffY
@@ -287,7 +287,7 @@ func _thread_createNavitation_file(params):
 #	self.navFileData.markerBitVal
 #	self.navFileData.markerFilled
 	Signals.show_notification.emit("Start generating pattern.")
-	var fieldSize = int(self.navFileData.generalData.fieldSize)
+	fieldSize = int(self.navFileData.generalData.fieldSize)
 	posCacheLocked = true
 	textureUpdateTime = Time.get_ticks_msec()
 	var maxSize = params[0]

@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Navigation Helper"
 run/main_scene="res://main.tscn"
-config/features=PackedStringArray("4.0")
+config/features=PackedStringArray("4.2")
 run/low_processor_mode=true
 config/icon="res://icon.png"
 
@@ -22,6 +22,10 @@ MarkerStore="*res://GlobalAutoload/MarkerStore.gd"
 Signals="*res://GlobalAutoload/Signals.gd"
 GdsExporter="*res://gdsPythonConverter/gds_exporter.gd"
 ProjectStore="*res://GlobalAutoload/projectStore.gd"
+
+[debug]
+
+gdscript/warnings/integer_division=0
 
 [display]
 
