@@ -1,6 +1,7 @@
 extends Window
 var command
-# Called when the node enters the scene tree for the first time.
+
+#convert into gds file for lithography
 func _ready():
 	Signals.show_path_to_convert_gds_dialog.connect(func(path):
 		visible = true

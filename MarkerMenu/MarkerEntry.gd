@@ -1,5 +1,6 @@
 extends HBoxContainer
 var marker
+
 func set_marker(m):
 	marker = m
 	for c in $IconContainer.get_children():
@@ -13,7 +14,7 @@ func set_marker(m):
 	markerNode.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	$TargetButtton.button_pressed = MarkerStore.is_target(marker)
 	$"..".color = Color(0,0,0,0) if MarkerStore.is_selected(marker) else Color(0.1,0.1,0.1,0.1)
-# Called when the node enters the scene tree for the first time.
+
 
 func _input(event):
 	if event is InputEventMouseButton:

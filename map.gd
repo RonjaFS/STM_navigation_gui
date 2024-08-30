@@ -104,7 +104,9 @@ func add_arrow(from_pos: Vector2, to_pos: Vector2, type: int, color: Color):
 func save_navigation_cache(customPath = null):
 	var img = $mapTex.texture.get_image()
 	var pathImage = "user://navigation_"+str(nav_generator.hash_of_file)+".png"
+	print(pathImage)
 	var pathPosCache = "user://navigation_positionCache_"+str(nav_generator.hash_of_file)+".json"
+	print(pathPosCache)
 	GdsExporter.currentNavigationImagePath = pathImage
 	if customPath:
 		img.save_png(customPath)

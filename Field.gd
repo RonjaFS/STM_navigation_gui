@@ -8,7 +8,7 @@ extends Control
 @export var side_gap = 130
 var buttons = []
 @onready var mapNode = get_node("../map")
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
 	#$GridContainer.size = Vector2(this_size, this_size)
 	anchor_center($GridContainer)

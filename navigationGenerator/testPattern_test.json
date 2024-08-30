@@ -1,0 +1,40 @@
+{
+	"generalData": {
+		"pixelSize": 400,
+		"fieldSize": 4,
+		"markerBits": 1
+	},
+	"navigation": {
+		"chunkSize": 200,
+		"pixelSize": 400,
+		"fieldSize": 4,
+		"markerBits": 1,
+		"borderType": "Lshape",
+		"chunks": [
+			[
+				{
+					"chunkIndex": 0,
+					"markerFilled": false
+				}
+			]
+		]
+	},
+	"noPatternAreas": [
+	],
+	"comment": "Other possible navigation entry: _ is used for optional params",
+	"navigation2": {
+		"borderType": "Lshape",
+		"navSize": [
+			356,
+			356
+		],
+		"chunkIndex": 0,
+		"markerBits": 0,
+		"markerBitVal": 0,
+		"markerFilled": false,
+		"fieldSize": [
+			3,
+			3
+		]
+	}
+}

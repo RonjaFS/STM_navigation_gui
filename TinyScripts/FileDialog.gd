@@ -5,7 +5,7 @@ var PATH_TO_FILE_FILTER_DIC = "user://fileFilterPathDic.var"
 var _selectCallback = func(): pass
 var _lastFilterForFile = []
 var fileFilterPathDic = {}
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
 	var f = FileAccess.open(PATH_TO_FILE_FILTER_DIC, FileAccess.READ)
 	if f:
