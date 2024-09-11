@@ -9,11 +9,11 @@ import sys
 PIXEL_SIZE = 200
 BASE_PATH = "..\.." 
 #"C:\Users\Ronja\AppData\Roaming\Godot\app_userdata\Navigation_Helper\"
-FILE_NAME = "\navigation_4072000127"
+FILE_NAME = "/navigation_4072000127"
 IMAGE_PATH = BASE_PATH + FILE_NAME+".png"
 print(IMAGE_PATH)
 OUT_PATH = "C:/Users/Ronja/Documents/ElectronBeamLithographyFiles/FieldPatterns"+FILE_NAME+".gds"
-#OUT_PATH = "C:\Users\Ronja\Documents\ElectronBeamLithographyFiles\FieldPatterns"+FILE_NAME+".gds"
+#OUT_PATH = "C:\Users\Ronja\Documents\ElectronBeamLithographyFiles\FieldPatterns" + FILE_NAME + ".gds"
 
 # usage: python imageToGds.py path/to/image.png path/to/output.gds <PixelSize>
 
@@ -37,8 +37,10 @@ for i, arg in enumerate(sys.argv):
             print("Target File Location: ", OUT_PATH)
 
         case 3:
-            PIXEL_SIZE = int(arg)
-            print("Pixel Size:           ", PIXEL_SIZE, "\n")
+            print(arg)
+            #PIXEL_SIZE = int(arg)
+            print('Pixel Size:  ', arg)
+            #print("Pixel Size:           ", PIXEL_SIZE, "\n")
 
 # create a new gdsii layout
 ly = db.Layout()
