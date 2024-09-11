@@ -316,7 +316,7 @@ func _thread_createNavitation_file(params):
 			chunkProps.pos = {"x": s * chunkX,"y": s * chunkY}
 			createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX, cutoffY)
 	obj.call_deferred(callback, image, true)
-	Signals.show_notification.emit("Navigation pattern was generated.")
+	Signals.call_deferred("show_notification.emit","Navigation pattern was generated.")
 	posCacheLocked = false
 	return
 

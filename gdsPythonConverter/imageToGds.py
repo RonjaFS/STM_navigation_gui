@@ -7,7 +7,7 @@ import math
 import sys
 # Default params
 PIXEL_SIZE = 200
-BASE_PATH = "..\.." 
+BASE_PATH = "../.." 
 #"C:\Users\Ronja\AppData\Roaming\Godot\app_userdata\Navigation_Helper\"
 FILE_NAME = "/navigation_4072000127"
 IMAGE_PATH = BASE_PATH + FILE_NAME+".png"
@@ -38,9 +38,9 @@ for i, arg in enumerate(sys.argv):
 
         case 3:
             print(arg)
-            #PIXEL_SIZE = int(arg)
-            print('Pixel Size:  ', arg)
-            #print("Pixel Size:           ", PIXEL_SIZE, "\n")
+            PIXEL_SIZE = int(arg)
+            #print('Pixel Size:  ', arg)
+            print("Pixel Size:           ", PIXEL_SIZE, "\n")
 
 # create a new gdsii layout
 ly = db.Layout()
