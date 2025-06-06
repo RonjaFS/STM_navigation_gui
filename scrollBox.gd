@@ -53,15 +53,15 @@ func _on_hbar(new_val):
 	child.position.x = new_val
 
 func scroll_to_pos(pos):
-	var scale = child.scale
+	var scale_factor = child.scale
 	if(child.scale.x < GOTO_ZOOM):
-		scale = Vector2(GOTO_ZOOM, GOTO_ZOOM)
-	var newPos = -(pos*scale) + size/2
+		scale_factor = Vector2(GOTO_ZOOM, GOTO_ZOOM)
+	var newPos = -(pos*scale_factor) + size/2
 	var duration = (child.position - newPos).length()/20000
 	if tween:
 		tween.kill() # Abort the previous animation.
 	tween = get_tree().create_tween()
-	tween.tween_property(child, "scale", scale, duration)
+	tween.tween_property(child, "scale", scale_factor, duration)
 	tween.parallel().tween_property(child, "position", newPos, duration)
 
 func scroll_to_index(index, marker):

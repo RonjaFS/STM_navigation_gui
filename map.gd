@@ -89,7 +89,8 @@ func highlight_index(posIndex, marker):
 
 func remove_highlights():
 	for h in highlights:
-		remove_child(h)
+		if h.get_parent() == self:
+			remove_child(h)
 
 func add_arrow(from_pos: Vector2, to_pos: Vector2, type: int, color: Color):
 	var arrow = FlakeMarkerPacked.instantiate();

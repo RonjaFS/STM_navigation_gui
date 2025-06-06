@@ -65,7 +65,7 @@ func addNavpatch(x, y, id, isChunkMarker, offsetX, offsetY, img):
 	# check for no pattern area
 	var xAbs = x+offsetX
 	var yAbs = y+offsetY
-	for area in self.navFileData.noPatternAreas:
+	for area in self.navFileData.get("noPatternAreas", []): #should also work if noPatternAreas is empty
 		var xMin = area.pos[0]
 		var yMin = area.pos[1]
 		var xMax = area.size[0]+area.pos[0]
@@ -316,7 +316,7 @@ func _thread_createNavitation_file(params):
 			chunkProps.pos = {"x": s * chunkX,"y": s * chunkY}
 			createNavigationChunkWithProps(chunkProps, obj, callback, cutoffX, cutoffY)
 	obj.call_deferred(callback, image, true)
-	Signals.call_deferred("show_notification.emit","Navigation pattern was generated.")
+	Signals.show_notification.emit("Navigation pattern was generated.")
 	posCacheLocked = false
 	return
 
